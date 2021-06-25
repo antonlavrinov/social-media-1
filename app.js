@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const path = require("path");
 
 // const morgan = require("morgan");
 // const bodyParser = require("body-parser");
@@ -57,10 +58,17 @@ const port = process.env.PORT || 5000;
 // const db =
 //   "mongodb+srv://anton:OZoNamhYQYBZ7f6v@cluster0.ifqtj.mongodb.net/app?retryWrites=true&w=majority";
 
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "./client/build")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+  });
+}
 // console.log(process.env.DATABASE);
 const start = async () => {
   try {
-    await mongoose.connect("mongodb://localhost/social-media", {
+    await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useCreateIndex: true,
       useFindAndModify: false,

@@ -161,7 +161,7 @@ const Conversation: React.FC<Props> = ({
   };
 
   const lastMessage = conversation.messages[conversation.messages.length - 1];
-
+  console.log("lastMessage", lastMessage);
   return (
     <Wrapper>
       <WrapperLink to={`/conversation/${conversation._id}`}>
@@ -185,13 +185,14 @@ const Conversation: React.FC<Props> = ({
 
         <ConversationInfo>
           {conversation.users.map((user: any) => {
+            console.log("user", user);
             return (
               <ConversationLastUser key={user._id}>
                 {user.firstName} {user.lastName}
               </ConversationLastUser>
             );
           })}
-          {lastMessage.user === meUserData?._id ? (
+          {lastMessage?.user === meUserData?._id ? (
             <ConversationLastTextWrapper>
               <Avatar src={meUserData?.avatar} size="extra-small" />
               {lastMessage.content && (
@@ -207,13 +208,13 @@ const Conversation: React.FC<Props> = ({
             </ConversationLastTextWrapper>
           ) : (
             <ConversationLastTextWrapper>
-              {lastMessage.content && (
-                <ConversationLastText isRead={lastMessage.isRead}>
-                  {lastMessage.content}
+              {lastMessage?.content && (
+                <ConversationLastText isRead={lastMessage?.isRead}>
+                  {lastMessage?.content}
                 </ConversationLastText>
               )}
-              {!lastMessage.content && lastMessage.images.length > 0 && (
-                <ConversationLastText isRead={lastMessage.isRead}>
+              {!lastMessage?.content && lastMessage?.images.length > 0 && (
+                <ConversationLastText isRead={lastMessage?.isRead}>
                   Photo
                 </ConversationLastText>
               )}
