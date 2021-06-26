@@ -138,11 +138,9 @@ const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
 
   const handleDeleteComment = async (postId: string) => {
     try {
-      const res = await request(
-        `http://localhost:5000/api/comment/${comment._id}`,
-        "DELETE",
-        { postId }
-      );
+      const res = await request(`/api/comment/${comment._id}`, "DELETE", {
+        postId,
+      });
       setComments((prevState: any) => {
         const newArr = prevState.filter((el: any) => el._id !== comment._id);
         return newArr;

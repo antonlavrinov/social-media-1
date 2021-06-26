@@ -28,12 +28,10 @@ const PersonalFriendsPage = () => {
 
   // console.log("my friend requests", meUserData);
   useEffect(() => {
-    request(`http://localhost:5000/api/friends/${meUserData?._id}`, "GET").then(
-      (res: any) => {
-        // console.log("friends", res);
-        setFriends(res.friends);
-      }
-    );
+    request(`/api/friends/${meUserData?._id}`, "GET").then((res: any) => {
+      // console.log("friends", res);
+      setFriends(res.friends);
+    });
   }, []);
   if (loading) {
     return <></>;

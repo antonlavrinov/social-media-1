@@ -166,15 +166,11 @@ const SendMessageModal: React.FC<Props> = ({
 
   const handleCreateConversation = async () => {
     try {
-      const res = await request(
-        "http://localhost:5000/api/conversation",
-        "POST",
-        {
-          content,
-          images,
-          userIds: [userData?._id],
-        }
-      );
+      const res = await request("/api/conversation", "POST", {
+        content,
+        images,
+        userIds: [userData?._id],
+      });
 
       setContent("");
       setImages([]);
@@ -206,7 +202,7 @@ const SendMessageModal: React.FC<Props> = ({
 
   const handleCreateMessage = async (existingConversation: any) => {
     try {
-      const res = await request("http://localhost:5000/api/message", "POST", {
+      const res = await request("/api/message", "POST", {
         content,
         images,
         conversationId: existingConversation._id,

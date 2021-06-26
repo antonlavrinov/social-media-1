@@ -51,7 +51,7 @@ const FriendCard: React.FC<Props> = ({ friend, isPersonal }) => {
     );
     try {
       await request(
-        `http://localhost:5000/api/friend-request/unfriend/${friendRequest?._id}`,
+        `/api/friend-request/unfriend/${friendRequest?._id}`,
         "PUT",
         { userId: friend._id }
       );

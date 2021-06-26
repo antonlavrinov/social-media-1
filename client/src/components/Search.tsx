@@ -81,10 +81,7 @@ const Search: React.FC<Props> = ({ meUserData }) => {
 
   useEffect(() => {
     if (debouncedText) {
-      request(
-        `http://localhost:5000/api/search/users?search=${debouncedText}`,
-        "GET"
-      )
+      request(`/api/search/users?search=${debouncedText}`, "GET")
         .then((res) => {
           console.log("search res", res);
           // const filtered = res.users.filter(

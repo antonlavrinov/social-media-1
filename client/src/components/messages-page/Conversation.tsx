@@ -143,7 +143,7 @@ const Conversation: React.FC<Props> = ({
     if (res) {
       try {
         const response = await request(
-          `http://localhost:5000/api/conversation/${conversation._id}`,
+          `/api/conversation/${conversation._id}`,
           "DELETE"
         );
         setConversations((prevState: any) => {

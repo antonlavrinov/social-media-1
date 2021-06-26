@@ -84,10 +84,7 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
   const handleReadMessage = async () => {
     console.log("handle read message", message);
     try {
-      const res = await request(
-        `http://localhost:5000/api/read_message/${message._id}`,
-        "PUT"
-      );
+      const res = await request(`/api/read_message/${message._id}`, "PUT");
 
       console.log("res", res);
 
@@ -179,7 +176,7 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
     if (messages.length === 1) {
       try {
         await request(
-          `http://localhost:5000/api/conversation/${message.conversation._id}`,
+          `/api/conversation/${message.conversation._id}`,
           "DELETE"
         );
         history.push("/messages");
@@ -195,10 +192,7 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
       }
     } else {
       try {
-        const res = await request(
-          `http://localhost:5000/api/message/${message._id}`,
-          "DELETE"
-        );
+        const res = await request(`/api/message/${message._id}`, "DELETE");
         setConversations((prevState: any) => {
           // console.log("message", message);
           console.log("i'm deleting a message", res.readMsg);

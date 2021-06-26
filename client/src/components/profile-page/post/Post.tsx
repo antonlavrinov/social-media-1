@@ -200,10 +200,7 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
 
   const handleDeletePost = async () => {
     try {
-      const res = await request(
-        `http://localhost:5000/api/post/${post._id}`,
-        "DELETE"
-      );
+      const res = await request(`/api/post/${post._id}`, "DELETE");
 
       const updatedPosts = userData!.wall.filter((el) => el._id !== post._id);
       // console.log("updatedPosts", updatedPosts);

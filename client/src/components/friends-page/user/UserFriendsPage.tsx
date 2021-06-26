@@ -18,12 +18,10 @@ const UserFriendsPage = () => {
   const { request, loading } = useHttp();
 
   useEffect(() => {
-    request(`http://localhost:5000/api/friends/${id}`, "GET").then(
-      (res: any) => {
-        // console.log("friends", res);
-        setFriends(res.friends);
-      }
-    );
+    request(`/api/friends/${id}`, "GET").then((res: any) => {
+      // console.log("friends", res);
+      setFriends(res.friends);
+    });
   }, []);
 
   if (loading) {

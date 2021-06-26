@@ -28,22 +28,15 @@ const useLikeComment = (comment: any, meUserData: IUserData | null) => {
     setLikes([...likes, meUserData]);
     // console.log("postid", post._id);
     try {
-      await request(
-        `http://localhost:5000/api/comment/like/${comment._id}`,
-        "PUT"
-      );
+      await request(`/api/comment/like/${comment._id}`, "PUT");
 
       if (comment.user._id !== meUserData?._id) {
         console.log("i can like this comment", comment);
-        const notification = await request(
-          `http://localhost:5000/api/notify`,
-          "POST",
-          {
-            text: "liked your comment",
-            url: `/profile/${comment.user._id}`,
-            recipients: [comment.user._id],
-          }
-        );
+        const notification = await request(`/api/notify`, "POST", {
+          text: "liked your comment",
+          url: `/profile/${comment.user._id}`,
+          recipients: [comment.user._id],
+        });
         socket.emit("createNotification", notification.notification);
       } else {
         console.log("my comment");
@@ -65,10 +58,7 @@ const useLikeComment = (comment: any, meUserData: IUserData | null) => {
     // console.log("newArr", newArr);
     setLikes(newArr);
     try {
-      await request(
-        `http://localhost:5000/api/comment/unlike/${comment._id}`,
-        "PUT"
-      );
+      await request(`/api/comment/unlike/${comment._id}`, "PUT");
       setLoadLike(false);
     } catch (e) {
       console.log(e);

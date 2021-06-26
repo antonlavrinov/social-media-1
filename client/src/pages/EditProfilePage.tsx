@@ -392,19 +392,15 @@ const EditProfilePage = () => {
         selectedDayOption,
         new Date(2017, 4, 32)
       );
-      const data = await request(
-        `http://localhost:5000/api/user/${auth.meUserData!._id}`,
-        "PUT",
-        {
-          ...credentials,
-          gender: selectedGenderOption.value,
-          dateOfBirth: new Date(
-            selectedYearOption.value,
-            selectedMonthOption.value,
-            selectedDayOption.value
-          ),
-        }
-      );
+      const data = await request(`/api/user/${auth.meUserData!._id}`, "PUT", {
+        ...credentials,
+        gender: selectedGenderOption.value,
+        dateOfBirth: new Date(
+          selectedYearOption.value,
+          selectedMonthOption.value,
+          selectedDayOption.value
+        ),
+      });
 
       const notification = {
         text: data.message,
@@ -463,13 +459,9 @@ const EditProfilePage = () => {
       const file = e.target.files[0];
       const resized = await resizeFile(file);
       try {
-        const res = await request(
-          "http://localhost:5000/api/upload-image",
-          "POST",
-          {
-            image: resized,
-          }
-        );
+        const res = await request("/api/upload-image", "POST", {
+          image: resized,
+        });
         console.log("image upload res", res);
         setCredentials({
           ...credentials,

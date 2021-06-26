@@ -59,7 +59,7 @@ const PostSubmitComment: React.FC<Props> = ({ post, setComments }) => {
 
   const handleCreateComment = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const res = await request("http://localhost:5000/api/comment", "POST", {
+    const res = await request("/api/comment", "POST", {
       content: text,
       postId: post._id,
     });
@@ -72,15 +72,11 @@ const PostSubmitComment: React.FC<Props> = ({ post, setComments }) => {
 
     if (post.user._id !== meUserData?._id) {
       console.log("not my post");
-      const notification = await request(
-        `http://localhost:5000/api/notify`,
-        "POST",
-        {
-          text: "left a comment under your post",
-          url: `/profile/${post.user._id}`,
-          recipients: [post.user._id],
-        }
-      );
+      const notification = await request(`/api/notify`, "POST", {
+        text: "left a comment under your post",
+        url: `/profile/${post.user._id}`,
+        recipients: [post.user._id],
+      });
       socket.emit("createNotification", notification.notification);
     }
   };

@@ -35,7 +35,7 @@ const MessagesPage = () => {
   // const { meUserData } = useContext(AuthContext);
   // const { request, loading } = useHttp();
   // useEffect(() => {
-  //   request(`http://localhost:5000/api/conversations`, "GET").then((res) => {
+  //   request(`/api/conversations`, "GET").then((res) => {
   //     console.log("conversations", res);
   //     setConversations(res.conversations);
   //   });

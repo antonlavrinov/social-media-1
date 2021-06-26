@@ -45,12 +45,9 @@ const SignIn = () => {
     e.preventDefault();
     try {
       // console.log(credentials);
-      const data = await request(
-        "http://localhost:5000/api/auth/login",
-        "POST",
-        credentials,
-        { Authorization: auth.accessToken }
-      );
+      const data = await request("/api/auth/login", "POST", credentials, {
+        Authorization: auth.accessToken,
+      });
 
       auth.login(data.accessToken, data.userData);
     } catch (e) {

@@ -15,11 +15,9 @@ export const useFriendRequest = (
 
   const handleSendFriendRequest = async () => {
     try {
-      const res = await request(
-        "http://localhost:5000/api/friend-request/create",
-        "POST",
-        { userId: userData._id }
-      );
+      const res = await request("/api/friend-request/create", "POST", {
+        userId: userData._id,
+      });
 
       setUserData({ ...userData, friendRequest: res.friendRequest });
       setRelationToMe("me_sent_request");
@@ -31,13 +29,9 @@ export const useFriendRequest = (
         url: "/friends?section=all_requests",
       };
 
-      const resNotif = await request(
-        "http://localhost:5000/api/notify",
-        "POST",
-        {
-          ...notification,
-        }
-      );
+      const resNotif = await request("/api/notify", "POST", {
+        ...notification,
+      });
       socket.emit("createNotification", resNotif.notification);
     } catch (e) {
       console.log(e);
@@ -47,7 +41,7 @@ export const useFriendRequest = (
   const handleSendUnFriendRequest = async () => {
     try {
       const res = await request(
-        `http://localhost:5000/api/friend-request/unfriend/${userData.friendRequest._id}`,
+        `/api/friend-request/unfriend/${userData.friendRequest._id}`,
         "PUT",
         { userId: userData._id }
       );
@@ -82,7 +76,7 @@ export const useFriendRequest = (
   const handleAcceptFriendRequest = async () => {
     try {
       const res = await request(
-        `http://localhost:5000/api/friend-request/accept/${userData.friendRequest._id}`,
+        `/api/friend-request/accept/${userData.friendRequest._id}`,
         "PUT",
         { userId: userData._id }
       );
@@ -111,13 +105,9 @@ export const useFriendRequest = (
         url: "/friends",
       };
 
-      const resNotif = await request(
-        "http://localhost:5000/api/notify",
-        "POST",
-        {
-          ...notification,
-        }
-      );
+      const resNotif = await request("/api/notify", "POST", {
+        ...notification,
+      });
       socket.emit("createNotification", resNotif.notification);
     } catch (e) {
       console.log(e);
@@ -127,7 +117,7 @@ export const useFriendRequest = (
   const handleCancelFriendRequest = async () => {
     try {
       const res = await request(
-        `http://localhost:5000/api/friend-request/cancel/${userData.friendRequest._id}`,
+        `/api/friend-request/cancel/${userData.friendRequest._id}`,
         "DELETE",
         { userId: userData._id }
       );

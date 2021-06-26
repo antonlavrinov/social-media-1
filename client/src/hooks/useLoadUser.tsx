@@ -26,7 +26,7 @@ export const useLoadUser = (slugId: string) => {
       setIsPersonal(false);
     }
 
-    request(`http://localhost:5000/api/user/${slugId}`, "GET")
+    request(`/api/user/${slugId}`, "GET")
       .then((res) => {
         setUserData(res.userData);
         setLoading(false);
@@ -45,7 +45,7 @@ export const useLoadUser = (slugId: string) => {
     // } else {
     //   setLoading(true);
     //   setIsPersonal(false);
-    //   request(`http://localhost:5000/api/user/${slugId}`, "GET")
+    //   request(`/api/user/${slugId}`, "GET")
     //     .then((res) => {
     //       setUserData(res.userData);
     //       setLoading(false);

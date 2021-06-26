@@ -113,10 +113,7 @@ const Notification: React.FC<NotificationProps> = ({
   const handleReadNotification = async () => {
     try {
       console.log("read notification", notification);
-      const res = await request(
-        `http://localhost:5000/api/notify/${notification._id}`,
-        "PUT"
-      );
+      const res = await request(`/api/notify/${notification._id}`, "PUT");
       console.log("i read notificatio", res);
       setNotifications((prevState: any) => {
         const notificIdx = prevState.findIndex(

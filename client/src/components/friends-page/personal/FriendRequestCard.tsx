@@ -35,11 +35,9 @@ const FriendRequestCard: React.FC<Props> = ({
     friendRequestId: string
   ) => {
     try {
-      await request(
-        `http://localhost:5000/api/friend-request/accept/${friendRequestId}`,
-        "PUT",
-        { userId: user._id }
-      );
+      await request(`/api/friend-request/accept/${friendRequestId}`, "PUT", {
+        userId: user._id,
+      });
       setMeUserData({
         ...meUserData,
         friends: [...meUserData?.friends, user],
@@ -58,13 +56,9 @@ const FriendRequestCard: React.FC<Props> = ({
         url: "/friends",
       };
 
-      const resNotif = await request(
-        "http://localhost:5000/api/notify",
-        "POST",
-        {
-          ...notification,
-        }
-      );
+      const resNotif = await request("/api/notify", "POST", {
+        ...notification,
+      });
       socket.emit("createNotification", resNotif.notification);
     } catch (e) {
       console.log(e);
@@ -77,11 +71,9 @@ const FriendRequestCard: React.FC<Props> = ({
   ) => {
     // console.log("data", user, friendRequestId);
     try {
-      await request(
-        `http://localhost:5000/api/friend-request/cancel/${friendRequestId}`,
-        "DELETE",
-        { userId: user._id }
-      );
+      await request(`/api/friend-request/cancel/${friendRequestId}`, "DELETE", {
+        userId: user._id,
+      });
       setFriendRequests((prevState: any) => {
         const newArr = prevState.filter(
           (el: any) => el.recipient._id !== user._id

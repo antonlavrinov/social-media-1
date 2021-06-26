@@ -150,11 +150,7 @@ const PostEdit: React.FC<Props> = ({ post, isPersonal, handleEditMode }) => {
         content: editText,
         images,
       };
-      const res = await request(
-        `http://localhost:5000/api/post/${post._id}`,
-        "PUT",
-        updatedPost
-      );
+      const res = await request(`/api/post/${post._id}`, "PUT", updatedPost);
 
       const postIdx = userData!.wall.findIndex((el) => el._id === post._id);
       const pst = userData!.wall[postIdx];

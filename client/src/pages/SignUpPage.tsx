@@ -80,12 +80,9 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const data = await request(
-        "http://localhost:5000/api/auth/register",
-        "POST",
-        credentials,
-        { Authorization: auth.accessToken }
-      );
+      const data = await request("/api/auth/register", "POST", credentials, {
+        Authorization: auth.accessToken,
+      });
       // console.log("NEW", data);
       auth.login(data.accessToken, data.userData);
     } catch (e) {

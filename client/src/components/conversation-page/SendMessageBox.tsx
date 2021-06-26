@@ -171,7 +171,7 @@ const SendMessageBox: React.FC<Props> = ({
     if ((!text && images.length === 0) || imageLoading) {
       return;
     }
-    const res = await request("http://localhost:5000/api/message", "POST", {
+    const res = await request("/api/message", "POST", {
       content: text,
       images,
       conversationId: conversation._id,

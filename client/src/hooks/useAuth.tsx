@@ -20,12 +20,9 @@ export const useAuth = () => {
   const getNotifications = useCallback(async (token) => {
     try {
       // console.log("making a request to notifications", accessToken);
-      const allNotifications = await request(
-        "http://localhost:5000/api/notifies",
-        "GET",
-        null,
-        { Authorization: `Bearer ${token}` }
-      );
+      const allNotifications = await request("/api/notifies", "GET", null, {
+        Authorization: `Bearer ${token}`,
+      });
       console.log("notifications from server", allNotifications);
       setNotifications(allNotifications.notifications);
     } catch (e) {
@@ -35,14 +32,9 @@ export const useAuth = () => {
 
   const getConversations = useCallback(async (token) => {
     // console.log("making a request to conversations", accessToken);
-    const res = await request(
-      `http://localhost:5000/api/conversations`,
-      "GET",
-      null,
-      {
-        Authorization: `Bearer ${token}`,
-      }
-    );
+    const res = await request(`/api/conversations`, "GET", null, {
+      Authorization: `Bearer ${token}`,
+    });
     setConversations((prevState) => {
       return res.conversations;
     });
@@ -87,7 +79,7 @@ export const useAuth = () => {
       try {
         // console.log("start refreshing token");
         const data = await request(
-          "http://localhost:5000/api/auth/refresh_token",
+          "/api/auth/refresh_token",
           "POST"
           // null,
           // {}

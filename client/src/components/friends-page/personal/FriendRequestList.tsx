@@ -17,10 +17,7 @@ const FriendRequestList = () => {
 
   const loadFriendRequests = async () => {
     try {
-      const res = await request(
-        `http://localhost:5000/api/pending_friend_requests`,
-        "GET"
-      );
+      const res = await request(`/api/pending_friend_requests`, "GET");
       // console.log("REEEEEEEEEEEs", res);
       setFriendRequests(res.friendRequests);
     } catch (e) {

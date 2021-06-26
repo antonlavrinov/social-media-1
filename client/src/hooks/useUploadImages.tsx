@@ -37,13 +37,9 @@ export const useUploadImages = () => {
         const resized = await resizeFile(file);
         try {
           // console.log("uploaded");
-          const res = await request(
-            "http://localhost:5000/api/upload-image",
-            "POST",
-            {
-              image: resized,
-            }
-          );
+          const res = await request("/api/upload-image", "POST", {
+            image: resized,
+          });
 
           // .secure_url
           // console.log("UPLOADED", res);
@@ -63,7 +59,7 @@ export const useUploadImages = () => {
         //   try {
         //     // console.log("uploaded");
         //     const res = await request(
-        //       "http://localhost:5000/api/upload-image",
+        //       "/api/upload-image",
         //       "POST",
         //       {
         //         image: resized,
@@ -109,10 +105,7 @@ export const useUploadImages = () => {
     });
 
     try {
-      await request(
-        `http://localhost:5000/api/remove-image/${image.public_id}`,
-        "DELETE"
-      );
+      await request(`/api/remove-image/${image.public_id}`, "DELETE");
     } catch (e) {
       console.log(e);
     }

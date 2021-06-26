@@ -30,7 +30,7 @@ const useLikePost = (meUserData: IUserData | null, post: any) => {
     setLikes([...likes, meUserData]);
     // console.log("postid", post._id);
     try {
-      await request(`http://localhost:5000/api/post/like/${post._id}`, "PUT");
+      await request(`/api/post/like/${post._id}`, "PUT");
 
       //notification recipients
 
@@ -39,15 +39,11 @@ const useLikePost = (meUserData: IUserData | null, post: any) => {
       // console.log("post.user._id", post.user._id);
       if (post.user._id !== meUserData?._id) {
         console.log("not my post");
-        const notification = await request(
-          `http://localhost:5000/api/notify`,
-          "POST",
-          {
-            text: "liked your post",
-            url: `/profile/${post.user._id}`,
-            recipients: [post.user._id],
-          }
-        );
+        const notification = await request(`/api/notify`, "POST", {
+          text: "liked your post",
+          url: `/profile/${post.user._id}`,
+          recipients: [post.user._id],
+        });
         socket.emit("createNotification", notification.notification);
       }
 
@@ -67,7 +63,7 @@ const useLikePost = (meUserData: IUserData | null, post: any) => {
     // console.log("newArr", newArr);
     setLikes(newArr);
     try {
-      await request(`http://localhost:5000/api/post/unlike/${post._id}`, "PUT");
+      await request(`/api/post/unlike/${post._id}`, "PUT");
 
       setLoadLike(false);
     } catch (e) {

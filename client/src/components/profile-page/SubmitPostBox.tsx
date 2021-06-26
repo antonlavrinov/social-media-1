@@ -185,7 +185,7 @@ const SubmitPostBox: React.FC<Props> = ({
       return;
     }
     try {
-      const res = await request("http://localhost:5000/api/post", "POST", {
+      const res = await request("/api/post", "POST", {
         content,
         images,
         userId: userData?._id,
@@ -197,15 +197,11 @@ const SubmitPostBox: React.FC<Props> = ({
       });
 
       if (!isPersonal) {
-        const notification = await request(
-          `http://localhost:5000/api/notify`,
-          "POST",
-          {
-            text: "posted something on your page",
-            url: `/profile/${userData?._id}`,
-            recipients: [userData?._id],
-          }
-        );
+        const notification = await request(`/api/notify`, "POST", {
+          text: "posted something on your page",
+          url: `/profile/${userData?._id}`,
+          recipients: [userData?._id],
+        });
         socket.emit("createNotification", notification.notification);
       }
 

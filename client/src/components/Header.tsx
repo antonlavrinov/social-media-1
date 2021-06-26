@@ -23,10 +23,8 @@ import { useHttp } from "../hooks/useHttp";
 export default function Header() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [
-    mobileMoreAnchorEl,
-    setMobileMoreAnchorEl,
-  ] = React.useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+    React.useState<null | HTMLElement>(null);
 
   const auth = useContext(AuthContext);
   const { request } = useHttp();
@@ -54,7 +52,7 @@ export default function Header() {
   const handleLogOut = async () => {
     try {
       // console.log(credentials);
-      await request("http://localhost:5000/api/auth/logout", "POST");
+      await request("/api/auth/logout", "POST");
 
       auth.logout();
     } catch (e) {

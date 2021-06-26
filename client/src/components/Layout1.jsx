@@ -68,7 +68,7 @@
 //   const handleLogOut = async () => {
 //     try {
 //       // console.log(credentials);
-//       await request("http://localhost:5000/api/auth/logout", "POST");
+//       await request("/api/auth/logout", "POST");
 
 //       logout();
 //     } catch (e) {
