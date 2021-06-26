@@ -64,6 +64,10 @@ if (process.env.NODE_ENV === "production") {
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
   });
+} else {
+  app.get("/", (req, res) => {
+    res.send("App in development");
+  });
 }
 // console.log(process.env.DATABASE);
 const start = async () => {
