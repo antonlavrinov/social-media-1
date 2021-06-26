@@ -57,7 +57,7 @@ const port = process.env.PORT || 5000;
 
 // const db =
 //   "mongodb+srv://anton:OZoNamhYQYBZ7f6v@cluster0.ifqtj.mongodb.net/app?retryWrites=true&w=majority";
-
+console.log("process", process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
 
