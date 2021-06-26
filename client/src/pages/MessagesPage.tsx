@@ -15,6 +15,8 @@ const Wrapper = styled.div`
   width: 550px;
 `;
 
+const Empty = styled.div``;
+
 const NoConversations = styled.div`
   display: flex;
   align-items: center;
