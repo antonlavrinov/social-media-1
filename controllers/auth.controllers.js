@@ -227,7 +227,7 @@ exports.loginUser = async (req, res) => {
     console.log(e);
     res
       .status(500)
-      .json({ message: "Something went wrong. Try one more time!" });
+      .json({ message: `Something went wrong. Try one more time! ${e}` });
   }
 };
 
