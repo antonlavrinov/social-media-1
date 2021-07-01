@@ -29,9 +29,6 @@ function App() {
 
   const [online, setOnline] = useState<any[]>([]);
 
-  // const [value, setValue] = useState(0);
-
-  // console.log("token", accessToken);
   const isAuthenticated = !!accessToken;
 
   const routes = useRoutes(isAuthenticated, meUserData?._id, ready);
@@ -50,8 +47,6 @@ function App() {
         setNotifications,
         conversations,
         setConversations,
-
-        // loading,
       }}
     >
       <OnlineContext.Provider value={{ online, setOnline }}>

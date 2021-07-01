@@ -5,18 +5,15 @@ export const useHttp = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { accessToken } = useContext(AuthContext);
 
-  const [error, setError] =
-    useState<null | {
-      message: string;
-      errors?: {
-        value?: string;
-        msg?: string;
-        param?: string;
-        location?: string;
-      }[];
-    }>(null);
-
-  // console.log("useHttp");
+  const [error, setError] = useState<null | {
+    message: string;
+    errors?: {
+      value?: string;
+      msg?: string;
+      param?: string;
+      location?: string;
+    }[];
+  }>(null);
 
   const request = useCallback(
     async (
@@ -35,17 +32,14 @@ export const useHttp = () => {
           headers["Authorization"] = `Bearer ${accessToken}`;
         }
 
-        // console.log("headers", headers);
+        console.log("REQUEST", body);
 
         const response = await fetch(url, {
           method,
           body,
           headers,
           credentials: "include",
-          // withCredentials: true,
         });
-
-        // console.log(response);
 
         const data = await response.json();
 

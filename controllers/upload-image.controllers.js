@@ -23,11 +23,9 @@ exports.uploadImage = async (req, res) => {
 exports.removeImage = async (req, res) => {
   try {
     let image_id = req.params.id;
-    console.log(req.params);
 
     cloudinary.uploader.destroy(image_id, (err, result) => {
       if (err.result !== "ok") {
-        console.log("err", err);
         return res.status(400).json({ message: "Could not remove image" });
       }
       res.send({ message: "Картинка удалена" });

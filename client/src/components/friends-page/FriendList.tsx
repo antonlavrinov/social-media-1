@@ -1,13 +1,7 @@
-import React, { useState, useContext } from "react";
-import { useHttp } from "../../hooks/useHttp";
+import React, { useContext } from "react";
 import { IUserData } from "../../interfaces/IUserData";
-import {
-  ContentBox,
-  ContentBoxContainer,
-  Separator,
-} from "../../styled-components/global";
+import { Separator } from "../../styled-components/global";
 import FriendCard from "./FriendCard";
-// import styled from "styled-components";
 import FriendsNavigation from "./FriendsNavigation";
 import { useQuery } from "../../hooks/useQuery";
 import { OnlineContext } from "../../context/OnlineContext";
@@ -43,11 +37,7 @@ const FriendList: React.FC<Props> = ({ friends, isPersonal }) => {
   return (
     <>
       {(query.get("section") === "all" || query.get("section") === null) && (
-        <FriendsNavigation
-          // count={friends.length}
-          tabs={tabs}
-          activeTab={tabs[0]}
-        >
+        <FriendsNavigation tabs={tabs} activeTab={tabs[0]}>
           {friends.length === 0 ? (
             <NoFriends>
               <div>No friends yet...</div>
@@ -57,7 +47,6 @@ const FriendList: React.FC<Props> = ({ friends, isPersonal }) => {
               {friends.map((friend, idx) => {
                 return (
                   <React.Fragment key={idx}>
-                    {/* {idx !== 0 && <Separator />} */}
                     <FriendCard friend={friend} isPersonal={isPersonal} />
                     <Separator />
                   </React.Fragment>
@@ -68,11 +57,7 @@ const FriendList: React.FC<Props> = ({ friends, isPersonal }) => {
         </FriendsNavigation>
       )}
       {query.get("section") === "online" && (
-        <FriendsNavigation
-          // count={onlineFriends.length}
-          tabs={tabs}
-          activeTab={tabs[1]}
-        >
+        <FriendsNavigation tabs={tabs} activeTab={tabs[1]}>
           {onlineFriends.length === 0 ? (
             <NoFriends>
               <div>No friends online...</div>

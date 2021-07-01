@@ -1,16 +1,34 @@
 const User = require("../models/User");
+const Comment = require("../models/Comment");
+const Conversation = require("../models/Conversation");
+const FriendRequest = require("../models/FriendRequest");
+const Message = require("../models/Message");
+const Notification = require("../models/Notification");
+const Post = require("../models/Post");
 const bcrypt = require("bcrypt");
 
 const jwt = require("jsonwebtoken");
 const { validationResult } = require("express-validator");
 
+const clearDB = async () => {
+  await User.deleteMany({});
+  await Comment.deleteMany({});
+  await Conversation.deleteMany({});
+  await FriendRequest.deleteMany({});
+  await Message.deleteMany({});
+  await Notification.deleteMany({});
+  await Post.deleteMany({});
+};
+
 exports.createUser = async (req, res) => {
   try {
+    // await clearDB();
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         errors: errors.array(),
-        message: "Проверьте правильность написания данных",
+        message: "Check your credentials one more time",
       });
     }
     const { email, password, firstName, lastName } = req.body;
@@ -45,12 +63,8 @@ exports.createUser = async (req, res) => {
       })
       .populate("friendRequests friends");
     if (candidate) {
-      return res
-        .status(400)
-        .json({ message: "Такой пользователь уже существует" });
+      return res.status(400).json({ message: "User already exists" });
     }
-
-    // console.log(candidate);
 
     const hashedPassword = await bcrypt.hash(password, 12);
 
@@ -59,38 +73,9 @@ exports.createUser = async (req, res) => {
       password: hashedPassword,
       firstName,
       lastName,
-      // online: true,
     });
 
     await user.save();
-
-    // console.log("user", user);
-    // console.log("userId", user.id);
-    // console.log("user_Id", user._id);
-    // console.log("user_Id_doc", user._doc);
-
-    // const newUser = {
-    //   //обязательно _doc!!!!
-    //   ...user._doc,
-    //   password: "",
-    // };
-
-    // console.log("newUser", newUser);
-    // console.log("newUserId", newUser.id);
-    // console.log("newUser_Id", newUser._id);
-
-    // res.json({ message: "Пользователь создан" });
-    // const token = jwt.sign(
-    //   //первым параметром мы передаем объект, в котором будут храниться данные
-    //   //которые будут зашифровары в этом jwt токене
-    //   { userId: user.id },
-    //   //вторым параметром передаем секретный ключ
-    //   //это может быть любая строчка, главное, чтобы она была действительно секретной
-    //   process.env.JWT_SECRET,
-    //   //через сколько наш jwt токен закончит свое существование
-    //   //рекомендуется на 1 час
-    //   { expiresIn: "1h" }
-    // );
 
     const accessToken = createAccessToken({ userId: user.id });
     const refreshToken = createRefreshToken({ userId: user.id });
@@ -101,13 +86,6 @@ exports.createUser = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
     });
 
-    // const userData = {
-    //   id: user.id,
-    //   email,
-    //   firstName,
-    //   lastName,
-    // };
-    //статус по умолчанию 200
     res.status(201).json({
       accessToken,
       userData: {
@@ -124,22 +102,17 @@ exports.createUser = async (req, res) => {
 };
 
 exports.loginUser = async (req, res) => {
-  // console.log("reached login");
   try {
     const errors = validationResult(req);
-    // console.log(errors);
 
     if (!errors.isEmpty()) {
-      console.log("errors", errors);
-      // console.log()
       return res.status(400).json({
         errors: errors.array(),
-        message:
-          "Не удаётся войти. Проверьте правильность написания почты и пароля",
+        message: "Couldn't log in. Check again your email and password",
       });
     }
     const { email, password } = req.body;
-    console.log("email, password", email);
+
     const user = await User.findOne({ email })
       .populate({
         path: "wall",
@@ -170,10 +143,8 @@ exports.loginUser = async (req, res) => {
       })
       .populate("friendRequests friends");
 
-    console.log("logged in user", user);
-
     if (!user) {
-      return res.status(400).json({ message: "Пользователь не найден" });
+      return res.status(400).json({ message: "User not found" });
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -181,38 +152,18 @@ exports.loginUser = async (req, res) => {
     if (!isMatch) {
       return res
         .status(400)
-        .json({ message: "Неверный пароль, попробуйте снова" });
+        .json({ message: "Wrong password. Try one more time" });
     }
 
     //далее нам надо сделать авторизацию. И учитывая, что у нас SPA, то
     //авторизацию мы будем делать через jwt токен
 
-    // const token = jwt.sign(
-    //   //первым параметром мы передаем объект, в котором будут храниться данные
-    //   //которые будут зашифровары в этом jwt токене
-    //   { userId: user.id },
-    //   //вторым параметром передаем секретный ключ
-    //   //это может быть любая строчка, главное, чтобы она была действительно секретной
-    //   process.env.JWT_SECRET,
-    //   //через сколько наш jwt токен закончит свое существование
-    //   //рекомендуется на 1 час
-    //   { expiresIn: "1h" }
-    // );
-
     const accessToken = createAccessToken({ userId: user.id });
     const refreshToken = createRefreshToken({ userId: user.id });
-
-    // const userData = {
-    //   id: user.id,
-    //   email: user.email,
-    //   firstName: user.firstName,
-    //   lastName: user.lastName,
-    // };
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       path: "/api/auth/refresh_token",
-      // path: "/profile",
       maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
     });
     //статус по умолчанию 200
@@ -232,7 +183,6 @@ exports.loginUser = async (req, res) => {
 };
 
 exports.logoutUser = async (req, res) => {
-  console.log("logged out!");
   try {
     res.clearCookie("refreshToken", {
       path: "/api/auth/refresh_token",
@@ -248,7 +198,6 @@ exports.logoutUser = async (req, res) => {
 
 exports.generateAccessToken = async (req, res) => {
   try {
-    console.log("refreshToken", req.cookies.refreshToken);
     const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken)
@@ -261,7 +210,7 @@ exports.generateAccessToken = async (req, res) => {
         if (err) {
           return res.status(400).json({ message: "Please login now" });
         }
-        console.log("result", result);
+
         const user = await User.findByIdAndUpdate(result.userId, {
           // online: true,
         })

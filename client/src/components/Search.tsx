@@ -1,13 +1,10 @@
-import { useContext, useState, useEffect, useRef } from "react";
-import { useStyles } from "./useStyles";
+import { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import { useDebounce } from "../hooks/useDebounce";
 import { useHttp } from "../hooks/useHttp";
-import { AuthContext } from "../context/AuthContext";
 import { IUserData } from "../interfaces/IUserData";
 import { Link } from "react-router-dom";
-import { ReactComponent as SearchIcon } from "../assets//icons/looking-glass-icon.svg";
-// import { AuthContext } from "../context/AuthContext";
+import { ReactComponent as SearchIcon } from "../assets/icons/looking-glass-icon.svg";
 
 import { Input } from "../styled-components/global";
 import useOnClickOutside from "../hooks/useOnClickOutside";
@@ -31,6 +28,7 @@ const ResultsWrapper = styled.div`
   box-shadow: var(--shadow-popup);
   border-radius: var(--border-radius-primary);
   background: white;
+  z-index: 100;
 `;
 
 const Result = styled(Link)`
@@ -47,8 +45,6 @@ const Result = styled(Link)`
 `;
 
 const ResultAvatar = styled.img`
-  /* min-width: 15px;
-  min-height: 15px; */
   width: 20px;
   height: 20px;
   border-radius: 100px;
@@ -65,11 +61,10 @@ const Search: React.FC<Props> = ({ meUserData }) => {
   useOnClickOutside(ref, () => {
     setIsFocused(false);
   });
-  const classes = useStyles();
+
   const { request } = useHttp();
   const [users, setUsers] = useState<IUserData[]>([]);
   const [isFocused, setIsFocused] = useState<boolean>(false);
-  const auth = useContext(AuthContext);
 
   const [inputText, setInputText] = useState<string>("");
 
@@ -83,22 +78,13 @@ const Search: React.FC<Props> = ({ meUserData }) => {
     if (debouncedText) {
       request(`/api/search/users?search=${debouncedText}`, "GET")
         .then((res) => {
-          console.log("search res", res);
-          // const filtered = res.users.filter(
-          //   (el: IUserData) => el._id !== auth.userData?._id
-          // );
           setUsers(res.users);
         })
         .catch((err) => console.log(err));
     } else {
       setUsers([]);
     }
-  }, [debouncedText]);
-
-  const handleClose = () => {
-    setInputText("");
-    setUsers([]);
-  };
+  }, [debouncedText, request]);
 
   return (
     <>
@@ -117,17 +103,10 @@ const Search: React.FC<Props> = ({ meUserData }) => {
           value={inputText}
           onChange={handleChange}
           paddingLeft="35px"
-          // onFocus={() => setIsFocused(true)}
-          // onBlur={() => setIsFocused(false)}
         />
         {users.length !== 0 && isFocused && (
           <ResultsWrapper>
             {users.map((user) => {
-              // console.log(user._id);
-              // if (user._id === meUserData?._id) {
-              //   console.log("me", user._id);
-              //   return;
-              // }
               return (
                 <Result
                   key={user._id}

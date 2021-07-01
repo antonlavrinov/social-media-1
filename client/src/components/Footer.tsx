@@ -1,8 +1,3 @@
-// import { Link } from "react-router-dom";
-import React from "react";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { faReact } from "@fortawesome/free-brands-svg-icons";
-// import { faGithub } from "@fortawesome/free-brands-svg-icons";
 import { ReactComponent as GitHubIcon } from "../assets/icons/footer/gitHub.svg";
 import { ReactComponent as ReactIcon } from "../assets/icons/footer/react.svg";
 import { ReactComponent as MongoDBIcon } from "../assets/icons/footer/mongoDB.svg";
@@ -13,7 +8,6 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 
 const Wrapper = styled.footer`
-  /* background: black; */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -64,7 +58,6 @@ const NodeJsWrapper = styled.a`
   margin-right: 25px;
   svg {
     width: 65px;
-    /* margin-right: 7px; */
     fill: var(--text-color-secondary);
   }
 `;
@@ -73,7 +66,6 @@ const MongoDBWrapper = styled.a`
   margin-right: 15px;
   svg {
     width: 95px;
-    /* margin-right: 7px; */
     fill: var(--text-color-secondary);
   }
 `;
@@ -84,7 +76,6 @@ const SocketIOWrapper = styled.a`
     min-width: 65px;
     width: 120px;
     height: 60px;
-    /* margin-right: 7px; */
     fill: var(--text-color-secondary);
   }
 `;
@@ -93,14 +84,12 @@ const TypescriptWrapper = styled.a`
   margin-right: 20px;
   svg {
     width: 90px;
-    /* margin-right: 7px; */
     fill: var(--text-color-secondary);
   }
 `;
 
 const Footer = () => {
   const location = useLocation();
-  console.log("location", location.pathname.includes("conversation"));
   if (location.pathname.includes("conversation")) {
     return <></>;
   }

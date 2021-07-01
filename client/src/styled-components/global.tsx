@@ -14,18 +14,14 @@ body {
   -webkit-box-sizing: border-box;
           box-sizing: border-box;
   letter-spacing: .05em;
-  font-family: 'Roboto', sans-serif;
-  font-family: 'Open Sans', sans-serif;
-  font-family: 'Noto Sans', sans-serif;
-  font-family: 'Ubuntu', sans-serif;
-  font-family: 'Rubik', sans-serif;
+
   font-family: "Segoe UI", sans-serif;
   line-height: 1.35;
   letter-spacing: 0.05rem;
   
   
   font-size: var(--text-size-primary);
-  /* font-weight: 500; */
+
   color: #45557A;
 }
 
@@ -100,8 +96,7 @@ footer {
 }
 
 .customSelect {
-  /* border: var(----border-primary); */
-  
+
   
   :focus {
     outline: none;
@@ -112,19 +107,19 @@ footer {
 }
 
 .daySelect {
-  /* border: var(--border-primary); */
+
   flex-grow: 1;
   margin-right: 10px;
 }
 
 .monthSelect {
-  /* border: var(--border-primary); */
+
   flex-grow: 10;
   margin-right: 10px;
 }
 
 .yearSelect {
-  /* border: var(--border-primary); */
+
   flex-grow: 2;
 }
 
@@ -158,7 +153,7 @@ footer {
     background: rgba(93, 102, 122, 0.6) !important;
     padding: 0 !important;
     padding-right: 15px !important;
-    /* filter: blur(4px); */
+
   }
 
   .customModal {
@@ -196,12 +191,12 @@ footer {
 
     --font-size-secondary: 16px;
     --font-family-primary: Open Sans, sans-serif;
-    /* --font-family-primary: Roboto, sans-serif; */
+
     --font-family-secondary: Montserrat, sans-serif;
 
     --shadow-primary: 0 5px 5px rgba(211, 218, 235, 0.5);
     --shadow-popup: 0 5px 5px rgba(211, 218, 235, 0.5);
-    /* --shadow-popup_dark */
+
 
     --border-radius-primary: 5px;
     --border-primary: 1px solid var(--text-color-secondary);
@@ -282,7 +277,6 @@ export const Button = styled.button<{
   marginRight?: string;
   marginLeft?: string;
 }>`
-  /* display: inline-flex; */
   border-radius: var(--border-radius-primary);
   font-size: var(--font-size-secondary);
   padding: 12px 20px;
@@ -359,7 +353,7 @@ export const Input = styled.input<{ paddingLeft?: string }>`
   border: var(--border-primary);
   border-radius: var(--border-radius-primary);
   padding: 8px 10px;
-  /* font-size: var(--text-size-secondary); */
+  overflow-y: hidden;
   font-size: var(--text-size-primary);
   width: 100%;
   ::placeholder {
@@ -369,7 +363,7 @@ export const Input = styled.input<{ paddingLeft?: string }>`
     props.paddingLeft &&
     `
     padding-left: ${props.paddingLeft};
-  `}//35px
+  `}
 `;
 
 export const TextArea = styled(TextareaAutosize)<{
@@ -383,6 +377,7 @@ export const TextArea = styled(TextareaAutosize)<{
   width: 100%;
   position: relative;
   font-size: var(--text-size-primary);
+  overflow-y: hidden;
   ::placeholder {
     color: var(--text-color-secondary);
   }
@@ -400,7 +395,6 @@ export const TextArea = styled(TextareaAutosize)<{
 export const Separator = styled.div`
   border-top: var(--border-primary);
   width: 100%;
-  /* background: var(--text-color-secondary); */
 `;
 
 export const Avatar = styled.img<{
@@ -409,7 +403,6 @@ export const Avatar = styled.img<{
   marginTop?: string;
   marginRight?: string;
   marginLeft?: string;
-  // onlineType?: boolean;
 }>`
   border-radius: 150px;
   object-fit: cover;
@@ -521,10 +514,16 @@ export const NotificationsCount = styled.div<{ top?: string; right?: string }>`
     props.right &&
     `
     right: ${props.right};
-  `} /* font-size: 11px; */
+  `}
 `;
 
-export const AvatarOnlineWrapper = styled.div<{ onlineType?: boolean }>`
+export const AvatarOnlineWrapper = styled.div<{
+  onlineType?: boolean;
+  onlineIconRightPosition?: string;
+  onlineIconSmall?: boolean;
+}>`
+  width: auto;
+  height: auto;
   ${(props) =>
     props.onlineType &&
     `
@@ -539,6 +538,24 @@ export const AvatarOnlineWrapper = styled.div<{ onlineType?: boolean }>`
     bottom: 3px;
     right: 15px;
     border: 2px solid white;
+  }
+`}
+  ${(props) =>
+    props.onlineIconRightPosition &&
+    `
+
+  :after {
+    right: ${props.onlineIconRightPosition};
+  }
+`}
+  ${(props) =>
+    props.onlineIconSmall &&
+    `
+
+  :after {
+    width: 7px;
+    height: 7px;
+    border: 1px solid white;
   }
 `}
 `;

@@ -35,9 +35,6 @@ const FriendRequestCard: React.FC<Props> = ({
     friendRequestId: string
   ) => {
     try {
-      await request(`/api/friend-request/accept/${friendRequestId}`, "PUT", {
-        userId: user._id,
-      });
       setMeUserData({
         ...meUserData,
         friends: [...meUserData?.friends, user],
@@ -47,6 +44,9 @@ const FriendRequestCard: React.FC<Props> = ({
           (el: any) => el.requester._id !== user._id
         );
         return newArr;
+      });
+      await request(`/api/friend-request/accept/${friendRequestId}`, "PUT", {
+        userId: user._id,
       });
 
       const notification = {
@@ -69,23 +69,20 @@ const FriendRequestCard: React.FC<Props> = ({
     user: IUserData,
     friendRequestId: string
   ) => {
-    // console.log("data", user, friendRequestId);
     try {
-      await request(`/api/friend-request/cancel/${friendRequestId}`, "DELETE", {
-        userId: user._id,
-      });
       setFriendRequests((prevState: any) => {
         const newArr = prevState.filter(
           (el: any) => el.recipient._id !== user._id
         );
         return newArr;
       });
+      await request(`/api/friend-request/cancel/${friendRequestId}`, "DELETE", {
+        userId: user._id,
+      });
     } catch (e) {
       console.log(e);
     }
   };
-
-  // console.log("AAAA", friend);
 
   return (
     <FriendCardWrapper>

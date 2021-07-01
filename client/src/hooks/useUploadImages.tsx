@@ -16,7 +16,7 @@ export const useUploadImages = () => {
         700,
         700,
         "JPEG",
-        80,
+        100,
         0,
         (uri) => {
           resolve(uri);
@@ -26,23 +26,17 @@ export const useUploadImages = () => {
     });
 
   const handleUploadImages = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    // console.log("handle upload");
     setImageLoading(true);
     e.preventDefault();
     if (e.target.files) {
       for (let i = 0; i < e.target.files!.length; i++) {
-        // console.log("iterated", e.target.files[i]);
-        // const reader = new FileReader();
         const file = e.target.files![i];
         const resized = await resizeFile(file);
         try {
-          // console.log("uploaded");
           const res = await request("/api/upload-image", "POST", {
             image: resized,
           });
 
-          // .secure_url
-          // console.log("UPLOADED", res);
           setImages((prevState) => {
             return [res, ...prevState];
           });
@@ -54,49 +48,11 @@ export const useUploadImages = () => {
           handlePageNotification({ type: "error", text: e.message });
           setImageLoading(false);
         }
-        // reader.readAsDataURL(file);
-        // reader.onload = async () => {
-        //   try {
-        //     // console.log("uploaded");
-        //     const res = await request(
-        //       "/api/upload-image",
-        //       "POST",
-        //       {
-        //         image: resized,
-        //       }
-        //     );
-
-        //     // .secure_url
-        //     // console.log("UPLOADED", res);
-        //     setImages((prevState) => {
-        //       return [res, ...prevState];
-        //     });
-        //     e.target.files = null;
-        //     e.target.value = "";
-        //     setImageLoading(false);
-        //   } catch (e) {
-        //     console.log(e);
-        //     handlePageNotification({ type: "error", text: e.message });
-        //     setImageLoading(false);
-        //   }
-        // };
       }
-      // console.log("process", images);
     }
-
-    // setReadyToSubmit(true);
-    // }
   };
 
   const handleRemoveImage = async (image: any) => {
-    // console.log(image);
-    // setImages((prevState) => {
-    //   const newArr = prevState.filter(
-    //     (img) => img.public_url !== image.public_url
-    //   );
-    //   return [...newArr];
-    // });
-
     setImages((prevState: any) => {
       const newArr = prevState.filter(
         (el: any) => el.public_id !== image.public_id

@@ -3,7 +3,6 @@ const Message = require("../models/Message");
 const Post = require("../models/Post");
 
 exports.createMessage = async (req, res) => {
-  console.log("create conversation");
   const { id: meId } = req.userMe;
   const { content, images, conversationId } = req.body;
 
@@ -40,14 +39,13 @@ exports.createMessage = async (req, res) => {
 };
 
 exports.updateMessage = async (req, res) => {
-  console.log("Update message");
   const { id: meId } = req.userMe;
   const { id } = req.params;
   const { content, images } = req.body;
 
   try {
     const updatedMessage = await Message.findOne({ _id: id, user: meId });
-    // console.log("posss", post);
+
     if (!updatedMessage) {
       return res.status(400).json({
         message: "This message doesn't belong to you",
@@ -68,16 +66,8 @@ exports.updateMessage = async (req, res) => {
 exports.deleteMessage = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  console.log("deleting message", id);
 
   try {
-    // const message = await Message.findOne({ _id: id });
-    // console.log("msg", message);
-    // if (!message) {
-    //   return res.status(400).json({
-    //     message: "You cannot delete this message",
-    //   });
-    // }
     await Message.findOneAndDelete({ _id: id });
 
     res.json({
@@ -92,13 +82,12 @@ exports.deleteMessage = async (req, res) => {
 };
 
 exports.readMessage = async (req, res) => {
-  console.log("read message");
   const { id: meId } = req.userMe;
   const { id } = req.params;
 
   try {
     const message = await Message.findOne({ _id: id, user: { $ne: meId } });
-    // console.log("posss", post);
+
     if (!message) {
       return res.status(400).json({
         message: "This message doesn't belong to you",

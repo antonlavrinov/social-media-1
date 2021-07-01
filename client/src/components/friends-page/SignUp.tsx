@@ -9,9 +9,8 @@ import {
   Input,
 } from "../../styled-components/global";
 import Alert from "@material-ui/lab/Alert";
+import ButtonSpinner from "../ButtonSpinner";
 import { useHistory } from "react-router";
-
-const Wrapper = styled.div``;
 
 const BoxTitle = styled.div`
   font-family: var(--font-family-secondary);
@@ -22,7 +21,6 @@ const BoxTitle = styled.div`
 `;
 
 const BoxSubTitle = styled.div`
-  /* font-family: var(--font-family-secondary); */
   color: var(--text-color-secondary);
   text-align: center;
   margin-bottom: 10px;
@@ -58,15 +56,12 @@ const SignUp = () => {
       const data = await request("/api/auth/register", "POST", credentials, {
         Authorization: auth.accessToken,
       });
-      // console.log("NEW", data);
       auth.login(data.accessToken, data.userData);
       history.push(`/profile/edit/${data.userData._id}`);
     } catch (e) {
       console.log(e);
     }
   };
-
-  // const classes = useStyles();
 
   return (
     <ContentBox>
@@ -76,7 +71,6 @@ const SignUp = () => {
         {error && <Alert severity="error">{error.message}</Alert>}
         <form onSubmit={handleSubmit}>
           <Input
-            // paddingLeft:
             value={credentials.firstName}
             onChange={handleChange}
             disabled={loading}
@@ -88,7 +82,6 @@ const SignUp = () => {
             type="text"
           />
           <Input
-            // paddingLeft:
             value={credentials.lastName}
             onChange={handleChange}
             disabled={loading}
@@ -100,7 +93,6 @@ const SignUp = () => {
             type="text"
           />
           <Input
-            // paddingLeft:
             value={credentials.email}
             onChange={handleChange}
             disabled={loading}
@@ -122,8 +114,13 @@ const SignUp = () => {
             required
             style={{ marginBottom: "10px" }}
           />
-          <Button size="small" type="submit" disabled={loading}>
-            Sign up
+          <Button
+            size="small"
+            type="submit"
+            disabled={loading}
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            Sign up {loading && <ButtonSpinner />}
           </Button>
         </form>
       </ContentBoxContainer>

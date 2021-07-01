@@ -5,8 +5,15 @@ import { useHttp } from "../../../hooks/useHttp";
 import { useQuery } from "../../../hooks/useQuery";
 import { Separator } from "../../../styled-components/global";
 import FriendCard from "../FriendCard";
-
+import Spinner from "../../Spinner";
 import FriendsNavigation from "../FriendsNavigation";
+import styled from "styled-components";
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+`;
 
 const UserFriendsPage = () => {
   const [friends, setFriends] = useState<any[]>([]);
@@ -19,13 +26,18 @@ const UserFriendsPage = () => {
 
   useEffect(() => {
     request(`/api/friends/${id}`, "GET").then((res: any) => {
-      // console.log("friends", res);
       setFriends(res.friends);
     });
   }, []);
 
   if (loading) {
-    return <></>;
+    return (
+      <div style={{ minHeight: "550px" }}>
+        <SpinnerWrapper>
+          <Spinner />
+        </SpinnerWrapper>
+      </div>
+    );
   }
 
   const onlineFriends = friends.filter((el: any) => online[el._id]);
@@ -37,11 +49,7 @@ const UserFriendsPage = () => {
   return (
     <>
       {(query.get("section") === "all" || query.get("section") === null) && (
-        <FriendsNavigation
-          // count={friends.length}
-          tabs={tabs}
-          activeTab={tabs[0]}
-        >
+        <FriendsNavigation tabs={tabs} activeTab={tabs[0]}>
           {friends.length === 0 ? (
             <div>No friends yet...</div>
           ) : (

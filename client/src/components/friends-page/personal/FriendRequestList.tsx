@@ -8,6 +8,7 @@ import { useQuery } from "../../../hooks/useQuery";
 import { useHttp } from "../../../hooks/useHttp";
 import { AuthContext } from "../../../context/AuthContext";
 import FriendRequestCard from "./FriendRequestCard";
+import styled from "styled-components";
 
 const FriendRequestList = () => {
   const { request, loading } = useHttp();
@@ -18,7 +19,6 @@ const FriendRequestList = () => {
   const loadFriendRequests = async () => {
     try {
       const res = await request(`/api/pending_friend_requests`, "GET");
-      // console.log("REEEEEEEEEEEs", res);
       setFriendRequests(res.friendRequests);
     } catch (e) {
       console.log(e);
@@ -28,10 +28,6 @@ const FriendRequestList = () => {
   useEffect(() => {
     loadFriendRequests();
   }, []);
-
-  // if (loading) {
-  //   return <div>loading...</div>;
-  // }
 
   const tabs = [
     {
@@ -50,18 +46,15 @@ const FriendRequestList = () => {
     },
   ];
 
-  // const pendingFriendRec
-
   return (
     <>
       {/* pending requests where i'm a recipient and he is a requester */}
       {query.get("section") === "all_requests" && (
-        <FriendsNavigation tabs={tabs} activeTab={tabs[0]}>
+        <FriendsNavigation loading={loading} tabs={tabs} activeTab={tabs[0]}>
           {!loading &&
             friendRequests
               .filter((el: any) => el.recipient._id === meUserData?._id)
               .map((friendRequest: any, idx: number) => {
-                // console.log("FRIEND", friend);
                 return (
                   <React.Fragment key={friendRequest._id}>
                     <FriendRequestCard

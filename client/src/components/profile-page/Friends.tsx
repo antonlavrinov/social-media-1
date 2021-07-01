@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   Button,
   ContentBoxContainer,
@@ -8,12 +8,9 @@ import {
 } from "../../styled-components/global";
 import { OnlineContext } from "../../context/OnlineContext";
 
-const FriendsWrapper = styled.div`
-  /* justify-content: center; */
-`;
+const FriendsWrapper = styled.div``;
 
 const Friend = styled.div`
-  /* margin: 0 10px; */
   display: flex;
   justify-content: center;
   a {
@@ -35,7 +32,6 @@ const FriendAvatar = styled.img`
 const FriendsList = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  /* grid-template-rows: 1fr 1fr; */
   grid-gap: 10px;
 `;
 
@@ -53,7 +49,6 @@ const NoFriends = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  /* padding-top: 10px; */
   width: 100%;
   div {
     display: block;
@@ -75,12 +70,13 @@ const Friends: React.FC<FriendsProps> = ({ friends, _id, isPersonal }) => {
   const { online } = useContext(OnlineContext);
 
   const onlineFriends = friends.filter((el: any) => online[el._id]);
+  const history = useHistory();
 
   return (
     <FriendsWrapper>
       <ContentBoxContainer>
         <FriendsTitle to={isPersonal ? `/friends` : `/friends?id=${_id}`}>
-          Друзья <FriendsTitleCount>{friends.length}</FriendsTitleCount>
+          Friends <FriendsTitleCount>{friends.length}</FriendsTitleCount>
         </FriendsTitle>
         {friends.length > 0 ? (
           <FriendsList>
@@ -103,9 +99,15 @@ const Friends: React.FC<FriendsProps> = ({ friends, _id, isPersonal }) => {
           <FriendsList style={{ minHeight: "100px", display: "flex" }}>
             <NoFriends>
               <div>No friends yet...</div>
-              <Button marginTop="10px" size="small">
-                Find friends
-              </Button>
+              {isPersonal ? (
+                <Button
+                  marginTop="10px"
+                  size="small"
+                  onClick={() => history.push("/search")}
+                >
+                  Find friends
+                </Button>
+              ) : null}
             </NoFriends>
           </FriendsList>
         )}

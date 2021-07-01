@@ -27,16 +27,12 @@ exports.createComment = async (req, res) => {
     await comment.save();
 
     await comment
-      .populate(
-        {
-          path: "user",
-          select: "avatar firstName lastName _id",
-        }
-        // populate: "user likes",
-      )
+      .populate({
+        path: "user",
+        select: "avatar firstName lastName _id",
+      })
       .execPopulate();
 
-    //if personal then push to meState
     res.json({
       message: "Successfully added a comment!",
       comment,
@@ -78,13 +74,11 @@ exports.deleteComment = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
   const { postId } = req.body;
-  //   const { content, images } = req.body;
 
   try {
     const comment = await Comment.findOneAndDelete({ _id: id, user: meId });
     await Post.findOneAndUpdate({ _id: postId }, { $pull: { comments: id } });
 
-    console.log("comment", comment);
     res.json({
       message: "Successfully deleted a comment!",
     });
@@ -106,8 +100,6 @@ exports.likeComment = async (req, res) => {
         message: "You already liked the comment",
       });
     }
-
-    // console.log("ud", req.params);
 
     const updated = await Comment.findOneAndUpdate(
       { _id: id },

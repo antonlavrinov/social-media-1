@@ -16,7 +16,6 @@ const useNotistack = () => {
   };
 
   const handlePageNotification = (message: any, variant?: VariantType) => {
-    // console.log("variant", variant);
     enqueueSnackbar(message, {
       variant,
       content: (key: any, message: any) => (

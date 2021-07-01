@@ -18,33 +18,63 @@ const FriendRequestButton: React.FC<Props> = ({
     handleCancelFriendRequest,
     handleSendUnFriendRequest,
     handleAcceptFriendRequest,
+    loading,
   } = useFriendRequest(userData, setUserData, relationToMe, setRelationToMe);
-  // console.log("relationtome", relationToMe);
+
   return (
     <div>
       {console.log("relation to me", relationToMe)}
       {relationToMe === "not_friend" && (
-        <Button onClick={handleSendFriendRequest.bind(null)} width="fullwidth">
-          Добавить в друзья
+        <Button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onClick={!loading ? handleSendFriendRequest.bind(null) : () => {}}
+          width="fullwidth"
+        >
+          Send friend request
         </Button>
       )}
       {relationToMe === "friend" && (
         <Button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
           color="secondary"
           width="fullwidth"
-          onClick={handleSendUnFriendRequest}
+          onClick={!loading ? handleSendUnFriendRequest : () => {}}
         >
-          Убрать из друзей
+          Unfriend
         </Button>
       )}
       {relationToMe === "user_sent_request" && (
-        <Button width="fullwidth" onClick={handleAcceptFriendRequest}>
-          Принять заявку
+        <Button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          width="fullwidth"
+          onClick={!loading ? handleAcceptFriendRequest : () => {}}
+        >
+          Accept friend request
         </Button>
       )}
       {relationToMe === "me_sent_request" && (
-        <Button width="fullwidth" onClick={handleCancelFriendRequest}>
-          Отменить заявку
+        <Button
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          width="fullwidth"
+          onClick={!loading ? handleCancelFriendRequest : () => {}}
+        >
+          Unsubscribe
         </Button>
       )}
     </div>

@@ -13,7 +13,7 @@ import {
 import Emojis from "../Emojis";
 import { ReactComponent as CrossIcon } from "../../assets/icons/cross-icon.svg";
 import Spinner from "../Spinner";
-// import { ConversationContext } from "../../context/ConversationContext";
+import { v4 as uuidv4 } from "uuid";
 
 const PostCommentWrapper = styled.div`
   position: relative;
@@ -46,32 +46,8 @@ const ImageUpload = styled.div`
   }
 `;
 
-const UserAvatar = styled.img`
-  width: 37px;
-  height: 37px;
-  margin-right: 15px;
-  border-radius: 100px;
-`;
-
-const ButtonWrapper = styled.button`
-  margin-left: 10px;
-  padding-top: 5px;
-  background: none;
-  svg {
-    ${svgPrimaryStyle}
-    fill: var(--color-dark-secondary);
-    :hover {
-      fill: var(--text-color-secondary);
-    }
-  }
-`;
-
 const PreviewImagesWrapper = styled.div`
   display: flex;
-  /* margin-left: 15px;
-  margin-bottom: 13px; */
-
-  /* margin-top: 1px; */
 `;
 
 const PreviewImageWrapper = styled.div`
@@ -134,13 +110,9 @@ const ImageLoading = styled.div`
 
 type Props = {
   conversation: any;
-  // setConversation: React.Dispatch<React.SetStateAction<any[]>>;
 };
 
-const SendMessageBox: React.FC<Props> = ({
-  // setConversation,
-  conversation,
-}) => {
+const SendMessageBox: React.FC<Props> = ({ conversation }) => {
   const [text, setText] = useState<string>("");
   const {
     images,
@@ -149,15 +121,12 @@ const SendMessageBox: React.FC<Props> = ({
     handleRemoveImage,
     imageLoading,
   } = useUploadImages();
-  // const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const ref = useRef<HTMLFormElement>(null);
   const imageUploadRef = useRef<null | HTMLInputElement>(null);
   const [textAreaHeight, setTextAreaHeight] = useState("auto");
-  // const { conversation } = useContext(ConversationContext);
   const { meUserData, socket, setConversations } = useContext(AuthContext);
   const { request } = useHttp();
   const handleChange = (e: any): void => {
-    // console.log("change", e.target);
     setTextAreaHeight("auto");
     setText(e.target.value);
   };
@@ -171,26 +140,56 @@ const SendMessageBox: React.FC<Props> = ({
     if ((!text && images.length === 0) || imageLoading) {
       return;
     }
+
+    const newMessageId = uuidv4();
+
+    const newMessage = {
+      content: text,
+      conversation: {
+        createdAt: new Date().toISOString(),
+        messages: [...conversation.messages],
+        updatedAt: new Date().toISOString(),
+        users: [...conversation.users],
+        _id: conversation._id,
+      },
+      user: {
+        firstName: meUserData?.firstName,
+        lastName: meUserData?.lastName,
+        avatar: meUserData?.avatar,
+        _id: meUserData?._id,
+      },
+      createdAt: new Date().toISOString(),
+      images,
+      isRead: false,
+      updatedAt: new Date().toISOString(),
+      _id: newMessageId,
+    };
+
+    setText("");
+    setImages([]);
+
+    setConversations((prevState: any) => {
+      //new array of conversations
+      const newArr = prevState.filter(
+        (el: any) => el._id !== newMessage.conversation._id
+      );
+
+      const currentConv = prevState.find(
+        (el: any) => el._id === newMessage.conversation._id
+      );
+      const updatedConv = {
+        ...currentConv,
+        messages: [...currentConv.messages, newMessage],
+      };
+
+      return [updatedConv, ...newArr];
+    });
+
     const res = await request("/api/message", "POST", {
       content: text,
       images,
       conversationId: conversation._id,
     });
-
-    // console.log("comment res", res);
-    setText("");
-    setImages([]);
-
-    // setConversation((prevState: any) => {
-    //   const messages = [...prevState?.messages, res.newMessage];
-    //   const newConversation = {
-    //     ...prevState,
-    //     messages,
-    //   };
-    //   // console.log("state new", newConversation);
-
-    //   return newConversation;
-    // });
 
     setConversations((prevState: any) => {
       const newArr = prevState.filter(
@@ -200,9 +199,13 @@ const SendMessageBox: React.FC<Props> = ({
       const currentConv = prevState.find(
         (el: any) => el._id === res.newMessage.conversation._id
       );
+
+      const apiMessages = currentConv.messages.filter(
+        (el: any) => el._id !== newMessageId
+      );
       const updatedConv = {
         ...currentConv,
-        messages: [...currentConv.messages, res.newMessage],
+        messages: [...apiMessages, res.newMessage],
       };
 
       return [updatedConv, ...newArr];
@@ -219,8 +222,6 @@ const SendMessageBox: React.FC<Props> = ({
 
     socket.emit("createMessage", res.newMessage);
     socket.emit("createMessageNotification", notification);
-
-    // document.getElementById(res.newMessage._id)?.scrollIntoView();
   };
   const handleKeyPress = (
     e: React.KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>
@@ -229,16 +230,9 @@ const SendMessageBox: React.FC<Props> = ({
       ref?.current?.dispatchEvent(
         new Event("submit", { cancelable: true, bubbles: true })
       );
-      e.preventDefault();
-      // e.stopPropagation();
     }
   };
 
-  // useEffect(() => {
-  //   // setParentHeight(`${textAreaRef.current!.scrollHeight}px`);
-  //   setTextAreaHeight(`${textAreaRef.current!.scrollHeight}px`);
-  //   console.log(textAreaRef.current!.scrollHeight);
-  // }, [text]);
   return (
     <PostCommentWrapper>
       <form ref={ref} onSubmit={handleCreateMessage}>
@@ -256,18 +250,6 @@ const SendMessageBox: React.FC<Props> = ({
           onKeyDown={handleKeyPress}
         />
 
-        {/* <textarea
-          ref={textAreaRef}
-          rows={1}
-          style={{
-            minHeight: textAreaHeight,
-            resize: "none",
-          }}
-          placeholder={"Write something..."}
-          onKeyDown={handleKeyPress}
-          onChange={handleChange}
-          value={text}
-        /> */}
         <ImageUpload>
           <label>
             <ImageUploadIcon />
@@ -275,7 +257,6 @@ const SendMessageBox: React.FC<Props> = ({
               type="file"
               name="file"
               accept="image/*"
-              // multiple
               onChange={handleUploadImages}
               onKeyPress={handleKeyPress}
               ref={imageUploadRef}
@@ -285,9 +266,6 @@ const SendMessageBox: React.FC<Props> = ({
         </ImageUpload>
 
         <Emojis handleChooseEmoji={handleChooseEmoji} />
-        {/* <ButtonWrapper type="submit" disabled={!text}>
-          <PublishCommentIcon />
-        </ButtonWrapper> */}
       </form>
       <ImagesPreviewWrapper exists={imageLoading || images.length > 0}>
         <>

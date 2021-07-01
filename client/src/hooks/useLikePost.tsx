@@ -12,33 +12,22 @@ const useLikePost = (meUserData: IUserData | null, post: any) => {
   const { request } = useHttp();
   const { handlePageNotification } = useNotistack();
 
-  // console.log("commentttttt", likes);
-
   useEffect(() => {
-    // console.log("likesssss", likes);
     if (likes.find((like: IUserData) => like._id === meUserData!._id)) {
       setIsLike(true);
     }
-    // console.log("likes", likes);
   }, [likes, meUserData!._id]);
 
   const handleLikePost = async () => {
     if (loadLike) return;
-    // if (likes.find((like: IUserData) => like._id !== meUserData!._id)) {
     setIsLike(true);
     setLoadLike(true);
     setLikes([...likes, meUserData]);
-    // console.log("postid", post._id);
+
     try {
       await request(`/api/post/like/${post._id}`, "PUT");
 
-      //notification recipients
-
-      // let recipientsArr;
-      // if (post.user._id === )
-      // console.log("post.user._id", post.user._id);
       if (post.user._id !== meUserData?._id) {
-        console.log("not my post");
         const notification = await request(`/api/notify`, "POST", {
           text: "liked your post",
           url: `/profile/${post.user._id}`,
@@ -60,7 +49,7 @@ const useLikePost = (meUserData: IUserData | null, post: any) => {
     setIsLike(false);
     setLoadLike(true);
     const newArr = likes.filter((el: any) => el._id !== meUserData?._id);
-    // console.log("newArr", newArr);
+
     setLikes(newArr);
     try {
       await request(`/api/post/unlike/${post._id}`, "PUT");

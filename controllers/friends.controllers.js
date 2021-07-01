@@ -4,8 +4,7 @@ const FriendRequest = require("../models/FriendRequest");
 exports.getFriends = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  //   const { content, images } = req.body;
-  //   console.log("credentials", meId, userId);
+
   try {
     const user = await User.findOne({ _id: id }).select("friends").populate({
       path: "friends",
@@ -24,9 +23,7 @@ exports.getFriends = async (req, res) => {
 };
 
 exports.getPendingFriendRequests = async (req, res) => {
-  console.log("reached pending requests");
   const { id: meId } = req.userMe;
-  console.log("ME", meId);
 
   try {
     const friendRequests = await FriendRequest.find({
@@ -50,14 +47,11 @@ exports.getPendingFriendRequests = async (req, res) => {
         select: "avatar firstName lastName _id",
       });
 
-    console.log("friendRequests", friendRequests);
-
     res.json({
       message: "Successfully found friends!",
       friendRequests,
     });
   } catch (e) {
-    console.log("ytttttttttttt");
     console.log(e);
     res
       .status(500)

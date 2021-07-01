@@ -4,14 +4,12 @@ import { Link } from "react-router-dom";
 import { ReactComponent as ProfileIcon } from "../assets/icons/profile-icon.svg";
 import { ReactComponent as MessagesIcon } from "../assets/icons/messages-icon.svg";
 import { ReactComponent as FriendsIcon } from "../assets/icons/friends-icon.svg";
-import { ReactComponent as LogoIcon } from "../assets/icons/intouch-logo.svg";
 import { ReactComponent as ArrowIcon } from "../assets/icons/arrow-more-icon.svg";
 
 import {
   Avatar,
   ContentBox,
   NotificationsCount,
-  svgPrimaryStyleNoHover,
   svgSecondaryStyle,
 } from "../styled-components/global";
 import Search from "./Search";
@@ -21,6 +19,7 @@ import { useHttp } from "../hooks/useHttp";
 import Notifications from "./profile-page/Notifications";
 import { useTippyVisibility } from "../hooks/useTippyVisibility";
 import Footer from "./Footer";
+import RecentUsers from "./RecentUsers";
 
 const Logo = styled(Link)`
   font-size: 25px;
@@ -67,10 +66,7 @@ const HeaderWrapper = styled.div`
   position: relative;
 `;
 
-const Navigation = styled.nav`
-  min-width: 170px;
-  margin-right: 10px;
-`;
+const Navigation = styled.nav``;
 
 const NavigationLink = styled(Link)`
   font-size: var(--font-size-secondary);
@@ -88,12 +84,10 @@ const NavigationLink = styled(Link)`
     height: 35px;
     width: 35px;
     fill: var(--color-primary);
-    /* ${svgSecondaryStyle} */
   }
   :hover {
     background: var(--color-secondary);
     font-size: var(--font-size-secondary);
-    /* font-weight: 600; */
   }
 `;
 
@@ -108,7 +102,6 @@ const UserNavbar = styled.div`
   align-items: center;
 
   margin-left: auto;
-  /* padding: 15px 0; */
 `;
 
 const UserInfo = styled.div`
@@ -124,13 +117,6 @@ const UserInfo = styled.div`
     cursor: pointer;
     background: var(--color-secondary);
   }
-`;
-
-const UserAvatar = styled.img`
-  width: 38px;
-  height: 38px;
-  border-radius: 100px;
-  margin-right: 10px;
 `;
 
 const UserName = styled.div`
@@ -158,21 +144,28 @@ const UserInfoPopupSelect = styled.div`
   }
 `;
 
-// const Count = styled.div`
-//   width
-// `
+const LeftNav = styled.div`
+  min-width: 165px;
+  margin-right: 15px;
+`;
 
 const Layout: React.FC = ({ children }) => {
-  const { logout, meUserData, notifications, setNotifications, conversations } =
-    useContext(AuthContext);
+  const {
+    logout,
+    meUserData,
+    notifications,
+    setNotifications,
+    conversations,
+    socket,
+  } = useContext(AuthContext);
   const { visible, show, hide } = useTippyVisibility();
 
   const { request } = useHttp();
 
   const handleLogOut = async () => {
     try {
-      // console.log(credentials);
       await request("/api/auth/logout", "POST");
+      socket.disconnect();
 
       logout();
     } catch (e) {
@@ -180,7 +173,6 @@ const Layout: React.FC = ({ children }) => {
     }
   };
 
-  // console.log("notifyy", notifications);
   let unReadMessagesCount = 0;
   conversations.forEach((conversation: any) => {
     conversation.messages.forEach((message: any) => {
@@ -189,20 +181,6 @@ const Layout: React.FC = ({ children }) => {
       }
     });
   });
-
-  let pendingFriendRequestsCount = 0;
-  notifications.forEach((notification: any) => {
-    if (
-      notification.text === "sent you a friend request" &&
-      !notification.isRead
-    ) {
-      console.log("notification", notification.text);
-      console.log("passed");
-      pendingFriendRequestsCount++;
-    }
-  });
-
-  console.log("pendingFriendRequestsCount", pendingFriendRequestsCount);
 
   const userInfoPopup = (
     <ContentBox>
@@ -222,10 +200,7 @@ const Layout: React.FC = ({ children }) => {
       <Header>
         <Container>
           <HeaderWrapper>
-            <Logo to="/">
-              {/* <LogoIcon /> */}
-              intouch
-            </Logo>
+            <Logo to="/">intouch</Logo>
             <SearchWrapper>
               <Search meUserData={meUserData} />
             </SearchWrapper>
@@ -262,36 +237,35 @@ const Layout: React.FC = ({ children }) => {
       </Header>
       <Container>
         <MainWrapper>
-          <Navigation>
-            <NavigationLink to={`/profile/${meUserData?._id}`}>
-              <NavigationLinkIcon>
-                <ProfileIcon />
-              </NavigationLinkIcon>
-              Профиль
-            </NavigationLink>
-            <NavigationLink to={`/messages`}>
-              <NavigationLinkIcon>
-                <MessagesIcon />
-                {unReadMessagesCount !== 0 && (
-                  <NotificationsCount top="-7px" right="-3px">
-                    {unReadMessagesCount}
-                  </NotificationsCount>
-                )}
-              </NavigationLinkIcon>
-              Сообщения
-            </NavigationLink>
-            <NavigationLink to={`/friends`}>
-              <NavigationLinkIcon>
-                <FriendsIcon />
-                {/* {pendingFriendRequestsCount !== 0 && (
-                  <NotificationsCount top="-7px" right="-3px">
-                    {pendingFriendRequestsCount}
-                  </NotificationsCount>
-                )} */}
-              </NavigationLinkIcon>
-              Друзья
-            </NavigationLink>
-          </Navigation>
+          <LeftNav>
+            <Navigation>
+              <NavigationLink to={`/profile/${meUserData?._id}`}>
+                <NavigationLinkIcon>
+                  <ProfileIcon />
+                </NavigationLinkIcon>
+                Profile
+              </NavigationLink>
+              <NavigationLink to={`/messages`}>
+                <NavigationLinkIcon>
+                  <MessagesIcon />
+                  {unReadMessagesCount !== 0 && (
+                    <NotificationsCount top="-7px" right="-3px">
+                      {unReadMessagesCount}
+                    </NotificationsCount>
+                  )}
+                </NavigationLinkIcon>
+                Messages
+              </NavigationLink>
+              <NavigationLink to={`/friends`}>
+                <NavigationLinkIcon>
+                  <FriendsIcon />
+                </NavigationLinkIcon>
+                Friends
+              </NavigationLink>
+            </Navigation>
+            <RecentUsers />
+          </LeftNav>
+
           <main>{children}</main>
         </MainWrapper>
       </Container>

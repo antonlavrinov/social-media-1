@@ -8,11 +8,6 @@ const {
 const { auth } = require("../middlewares/auth.middleware");
 const router = Router();
 
-// const func = (req, res, next) => {
-//   console.log("hey!");
-//   next();
-// };
-
 router.post("/notify", auth, createNotification);
 router.put("/notify/:id", auth, setIsRead);
 

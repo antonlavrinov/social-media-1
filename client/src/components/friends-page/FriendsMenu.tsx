@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useHistory } from "react-router-dom";
-import {
-  ContentBox,
-  ContentBoxContainer,
-} from "../../styled-components/global";
+import { ContentBox } from "../../styled-components/global";
 
 const Wrapper = styled.div`
   flex-grow: 1;

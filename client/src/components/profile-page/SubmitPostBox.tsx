@@ -20,19 +20,14 @@ import Emojis from "../Emojis";
 import { useUploadImages } from "../../hooks/useUploadImages";
 import useNotistack from "../../hooks/useNotistack";
 import Spinner from "../Spinner";
+import { v4 as uuidv4 } from "uuid";
 
 const PostBoxWrapper = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    /* justify-content: flex-end; */
-    /* align-items: flex-end; */
   }
 `;
-
-// const InputInitial = styled.input`
-//   border: none;
-// `;
 
 const PreviewImage = styled.img<{ count?: number }>`
   width: 100%;
@@ -69,10 +64,6 @@ const ImageLoading = styled.div`
 
 const PreviewImagesWrapper = styled.div`
   display: flex;
-  /* margin-left: 15px;
-  margin-bottom: 13px; */
-
-  /* margin-top: 1px; */
 `;
 
 const PreviewImageWrapper = styled.div`
@@ -105,14 +96,11 @@ const FormMainWrapper = styled.div`
   align-items: center;
   position: relative;
   svg {
-    ${svgPrimaryStyle}/* position: absolute; */
-    /* top: 0;
-    right: 8px; */
+    ${svgPrimaryStyle}
   }
 `;
 
 const FormFooter = styled.div`
-  /* padding: 15px 0; */
   position: relative;
   display: flex;
   align-items: center;
@@ -139,7 +127,6 @@ const SubmitPostBox: React.FC<Props> = ({
   setMeUserData,
 }) => {
   const [content, setContent] = React.useState<string>("");
-  // const [images, setImages] = React.useState<any[]>([]);
   const [isFocus, setIsFocus] = React.useState<boolean>(false);
 
   const {
@@ -156,7 +143,6 @@ const SubmitPostBox: React.FC<Props> = ({
   const formRef = useRef<HTMLFormElement>(null);
   useOnClickOutside(formRef, () => {
     setIsFocus(false);
-    // console.log("outside");
   });
 
   const ref = useRef<null | HTMLInputElement>(null);
@@ -164,13 +150,6 @@ const SubmitPostBox: React.FC<Props> = ({
   useEffect(() => {
     setContent("");
   }, [userData?._id]);
-
-  // const handleChange = (
-  //   e: React.ChangeEventHandler<HTMLTextAreaElement>
-  // ): void => {
-  //   // setContent(e.target.value);
-  //   console.log(e);
-  // };
 
   const handleChange = (e: any): void => {
     setContent(e.target.value);
@@ -185,15 +164,45 @@ const SubmitPostBox: React.FC<Props> = ({
       return;
     }
     try {
+      const newId = uuidv4();
+
+      const newPost = {
+        comments: [],
+        content,
+        createdAt: new Date().toISOString(),
+        images: [],
+        likes: [],
+        repostedBy: [],
+        updatedAt: new Date().toISOString(),
+        user: {
+          firstName: meUserData?.firstName,
+          lastName: meUserData?.lastName,
+          avatar: meUserData?.avatar,
+          _id: meUserData?._id,
+        },
+        _id: newId,
+      };
+
+      setContent("");
+      setImages([]);
+      setIsFocus(false);
+      setUserData({
+        ...userData,
+        wall: [newPost, ...userData!.wall],
+      });
+
       const res = await request("/api/post", "POST", {
         content,
         images,
         userId: userData?._id,
       });
 
-      setUserData({
-        ...userData,
-        wall: [res.post, ...userData!.wall],
+      setUserData((prevState) => {
+        const newPostsFromApi = prevState.wall.filter(
+          (el) => el._id !== newPost._id
+        );
+
+        return { ...prevState, wall: [res.post, ...newPostsFromApi] };
       });
 
       if (!isPersonal) {
@@ -205,17 +214,11 @@ const SubmitPostBox: React.FC<Props> = ({
         socket.emit("createNotification", notification.notification);
       }
 
-      setContent("");
-      setImages([]);
-      setIsFocus(false);
-      console.log("RES", res.message);
       handlePageNotification({ type: "success", text: res.message });
     } catch (e) {
       console.log(e);
       handlePageNotification({ type: "error", message: e.message });
     }
-
-    // console.log("submit");
   };
 
   const handleChooseEmoji = (emoji: string): void => {
@@ -230,7 +233,6 @@ const SubmitPostBox: React.FC<Props> = ({
         new Event("submit", { cancelable: true, bubbles: true })
       );
       e.preventDefault();
-      // e.stopPropagation();
     }
   };
 
@@ -258,7 +260,7 @@ const SubmitPostBox: React.FC<Props> = ({
               }}
               onKeyPress={handleKeyPress}
             />
-            {/* {(isFocus || content || images.length > 0) && <EmojiIcon />} */}
+
             {(isFocus || content || images.length > 0) && (
               <Emojis handleChooseEmoji={handleChooseEmoji} />
             )}
@@ -309,9 +311,6 @@ const SubmitPostBox: React.FC<Props> = ({
             <Separator />
             <ContentBoxContainer>
               <FormFooter>
-                {/* <ImageUpload>
-                  
-                </ImageUpload> */}
                 <label>
                   <ImageUploadIcon />
 
@@ -343,24 +342,3 @@ const SubmitPostBox: React.FC<Props> = ({
 };
 
 export default SubmitPostBox;
-
-// <label>
-//   Choose file
-//   <input
-//     type="file"
-//     name="file"
-//     accept="image/*"
-//     multiple
-//     onChange={handleUploadImages}
-//     ref={ref}
-//   />
-// </label>
-// <CustomButton
-//   variant="contained"
-//   color="primary"
-//   style={{ width: "30%" }}
-//   type="submit"
-//   disabled={!content && images.length === 0}
-// >
-//   Опубликовать
-// </CustomButton>

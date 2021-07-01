@@ -1,8 +1,15 @@
-import React, { useState } from "react";
+import React from "react";
 import { ContentBox, Separator } from "../../styled-components/global";
 import styled from "styled-components";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useQuery } from "../../hooks/useQuery";
+import Spinner from "../Spinner";
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+`;
 
 const FriendsNavigationWrapper = styled.div`
   width: 550px;
@@ -39,6 +46,7 @@ const Tab = styled.div<{ selected: boolean }>`
 type Props = {
   tabs: ITab[];
   activeTab: ITab;
+  loading?: boolean;
   // count: number;
 };
 
@@ -52,7 +60,7 @@ const FriendsNavigation: React.FC<Props> = ({
   tabs,
   children,
   activeTab,
-  // count,
+  loading,
 }) => {
   const history = useHistory();
   const query = useQuery();
@@ -60,30 +68,38 @@ const FriendsNavigation: React.FC<Props> = ({
   return (
     <FriendsNavigationWrapper>
       <ContentBox style={{ minHeight: 500 }}>
-        <TabsWrapper>
-          {tabs.map((tab) => {
-            return (
-              <Tab
-                key={tab.url}
-                selected={tab.title === activeTab.title}
-                onClick={() =>
-                  history.push(
-                    `/friends?section=${tab.url}${
-                      query.get("id") ? `&id=${query.get("id")}` : ""
-                    }`
-                  )
-                }
-              >
-                {tab.title}{" "}
-                <span style={{ color: "var(--text-color-secondary)" }}>
-                  {tab.count}
-                </span>
-              </Tab>
-            );
-          })}
-        </TabsWrapper>
-        <Separator />
-        {children}
+        {loading ? (
+          <SpinnerWrapper>
+            <Spinner />
+          </SpinnerWrapper>
+        ) : (
+          <>
+            <TabsWrapper>
+              {tabs.map((tab) => {
+                return (
+                  <Tab
+                    key={tab.url}
+                    selected={tab.title === activeTab.title}
+                    onClick={() =>
+                      history.push(
+                        `/friends?section=${tab.url}${
+                          query.get("id") ? `&id=${query.get("id")}` : ""
+                        }`
+                      )
+                    }
+                  >
+                    {tab.title}{" "}
+                    <span style={{ color: "var(--text-color-secondary)" }}>
+                      {tab.count}
+                    </span>
+                  </Tab>
+                );
+              })}
+            </TabsWrapper>
+            <Separator />
+            {children}
+          </>
+        )}
       </ContentBox>
     </FriendsNavigationWrapper>
   );

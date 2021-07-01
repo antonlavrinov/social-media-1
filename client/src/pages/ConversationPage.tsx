@@ -1,33 +1,35 @@
-import { useContext, useEffect, useState } from "react";
-import { useHistory, useParams } from "react-router-dom";
+import { useContext } from "react";
+import { useParams } from "react-router-dom";
 import MessagesNavigation from "../components/conversation-page/MessagesNavigation";
 import MessagesList from "../components/conversation-page/MessagesList";
-// import { ConversationContext } from "../context/ConversationContext";
-import { useLoadConversation } from "../hooks/useLoadConversation";
-// import { SocketMessagesClient } from "../SocketMessagesClient";
+
 import { AuthContext } from "../context/AuthContext";
+import Spinner from "../components/Spinner";
+import styled from "styled-components";
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 100px;
+`;
 
 const ConversationPage = () => {
   const { id } = useParams<any>();
   const { conversations } = useContext(AuthContext);
-  const history = useHistory();
-  // const { conversation, setConversation, loading } = useLoadConversation(id);
-
-  console.log("conversationsSSS", conversations);
 
   const conversation = conversations.find((el: any) => el._id === id);
   if (!conversation) {
-    return <></>;
+    return (
+      <div style={{ minHeight: "550px" }}>
+        <SpinnerWrapper>
+          <Spinner />
+        </SpinnerWrapper>
+      </div>
+    );
   }
-  console.log("CONVERSATION", conversation);
-  // if (conversations.length === 0) {
-  // }
-
-  // return <></>;
 
   return (
     <>
-      {/* <SocketMessagesClient /> */}
       <MessagesNavigation conversation={conversation}>
         <MessagesList conversation={conversation} />
       </MessagesNavigation>
@@ -36,8 +38,3 @@ const ConversationPage = () => {
 };
 
 export default ConversationPage;
-
-// //{" "}
-// <ConversationContext.Provider value={{ conversation, setConversation }}></ConversationContext.Provider>
-//   //{" "}
-//   </ConversationContext.Provider>

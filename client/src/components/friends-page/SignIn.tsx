@@ -9,8 +9,7 @@ import {
   Input,
 } from "../../styled-components/global";
 import Alert from "@material-ui/lab/Alert";
-
-const Wrapper = styled.div``;
+import ButtonSpinner from "../ButtonSpinner";
 
 const BoxTitle = styled.div`
   font-family: var(--font-family-secondary);
@@ -29,8 +28,6 @@ const SignIn = () => {
     password: "",
   });
 
-  // const [errorMessage, setErrorMessage] = useState(null);
-
   const { request, error, loading } = useHttp();
   const auth = useContext(AuthContext);
 
@@ -43,8 +40,8 @@ const SignIn = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("CREDENTIALS", credentials);
     try {
-      // console.log(credentials);
       const data = await request("/api/auth/login", "POST", credentials, {
         Authorization: auth.accessToken,
       });
@@ -54,8 +51,6 @@ const SignIn = () => {
       console.log(e);
     }
   };
-
-  // const classes = useStyles();
 
   return (
     <ContentBox>
@@ -68,7 +63,6 @@ const SignIn = () => {
         )}
         <form onSubmit={handleSubmit}>
           <Input
-            // paddingLeft:
             value={credentials.email}
             onChange={handleChange}
             disabled={loading}
@@ -90,8 +84,13 @@ const SignIn = () => {
             type="password"
             style={{ marginBottom: "10px" }}
           />
-          <Button size="small" type="submit" disabled={loading}>
-            Sign in
+          <Button
+            size="small"
+            type="submit"
+            disabled={loading}
+            style={{ display: "flex", alignItems: "center" }}
+          >
+            Sign in {loading && <ButtonSpinner />}
           </Button>
         </form>
       </ContentBoxContainer>

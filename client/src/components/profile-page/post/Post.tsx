@@ -1,6 +1,6 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import styled from "styled-components";
-import { IPost, IUserData } from "../../../interfaces/IUserData";
+import { IPost } from "../../../interfaces/IUserData";
 import { DateTime } from "luxon";
 import { useHttp } from "../../../hooks/useHttp";
 import { UserContext } from "../../../context/UserContext";
@@ -27,13 +27,6 @@ import PostSubmitComment from "./PostSubmitComment";
 import PostComments from "./comments/Comments";
 import useLikePost from "../../../hooks/useLikePost";
 
-const IconsWrapper = styled.div`
-  display: flex;
-  position: absolute;
-  top: 5px;
-  right: 5px;
-`;
-
 const PostImage = styled.img`
   width: 100%;
 `;
@@ -43,18 +36,7 @@ const PostHeader = styled.div`
   align-items: center;
 `;
 
-const UserAvatar = styled.img`
-  width: 45px;
-  height: 45px;
-  border-radius: 100px;
-  margin-right: 15px;
-`;
-
 const UserInfo = styled.div``;
-
-const UserName = styled.div`
-  margin-bottom: 3px;
-`;
 
 const PostDate = styled.div`
   color: var(--text-color-secondary);
@@ -127,7 +109,6 @@ const CommentIconWrapper = styled.div`
 
 const LikeCount = styled.div`
   margin-left: 5px;
-  /* color: var(--text-color-secondary); */
   font-size: 16px;
   top: 2px;
 `;
@@ -150,7 +131,6 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
   const { visible, show, hide } = useTippyVisibility();
   const { handlePageNotification } = useNotistack();
 
-  // const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const date = DateTime.fromISO(post.createdAt).toLocaleString({
     day: "numeric",
     month: "long",
@@ -163,7 +143,6 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
   const { request } = useHttp();
   const { userData, setUserData, isPersonal } = useContext(UserContext);
   const { meUserData, setMeUserData } = useContext(AuthContext);
-  // const { handleNotification } = useNotistack();
 
   const { isLike, handleUnLikePost, handleLikePost, likes } = useLikePost(
     meUserData,
@@ -174,8 +153,7 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
     //can delete
     if (isPersonal) {
       setCanDelete(true);
-      // setCanEdit(true);
-      // console.log("meUserData wall", meUserData);
+
       const thisPost = userData!.wall!.find((el: IPost) => el._id === post._id);
       if (thisPost.user._id === meUserData?._id) {
         setCanEdit(true);
@@ -200,16 +178,14 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
 
   const handleDeletePost = async () => {
     try {
+      const updatedPosts = userData!.wall.filter((el) => el._id !== post._id);
+      setUserData({ ...userData, wall: updatedPosts });
       const res = await request(`/api/post/${post._id}`, "DELETE");
 
-      const updatedPosts = userData!.wall.filter((el) => el._id !== post._id);
-      // console.log("updatedPosts", updatedPosts);
-      setUserData({ ...userData, wall: updatedPosts });
       handlePageNotification({ type: "success", text: res.message });
     } catch (e) {
       console.log(e);
       handlePageNotification({ type: "error", text: e.message });
-      // handleNotification(e.message, "error");
     }
   };
 
@@ -230,12 +206,12 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
       <EditPostPopup>
         {canEdit && (
           <EditPostPopupSelect onClick={() => handleEditMode(true)}>
-            Редактировать
+            Edit
           </EditPostPopupSelect>
         )}
         {canDelete && (
           <EditPostPopupSelect onClick={handleDeletePost}>
-            Удалить
+            Delete
           </EditPostPopupSelect>
         )}
       </EditPostPopup>
@@ -265,7 +241,6 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
               offset={[0, 5]}
               visible={visible}
               onClickOutside={hide}
-              // hideOnClick={"toggle"}
             >
               <PostOptions onClick={visible ? hide : show}>
                 <CogwheelIcon />
@@ -289,7 +264,13 @@ const Post: React.FC<Props> = ({ post, setEditMode, editMode }) => {
             {post.images.length > 0 && (
               <PostImagesWrapper>
                 {post.images.map((image: any) => {
-                  return <PostImage src={image.url} alt={"post image"} />;
+                  return (
+                    <PostImage
+                      key={image._id}
+                      src={image.url}
+                      alt={"post image"}
+                    />
+                  );
                 })}
               </PostImagesWrapper>
             )}

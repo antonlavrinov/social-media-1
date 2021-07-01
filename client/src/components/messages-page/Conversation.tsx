@@ -7,12 +7,10 @@ import {
 } from "../../styled-components/global";
 import { ReactComponent as TrashIcon } from "../../assets/icons/trash-icon.svg";
 import { DateTime } from "luxon";
-import { Link, useHistory } from "react-router-dom";
-import { useRoutes } from "../../routes";
+import { Link } from "react-router-dom";
 import { useHttp } from "../../hooks/useHttp";
 import { AuthContext } from "../../context/AuthContext";
 import { OnlineContext } from "../../context/OnlineContext";
-// import e from "cors";
 
 const Wrapper = styled.div`
   position: relative;
@@ -42,7 +40,6 @@ const WrapperLink = styled(Link)`
 
 const ConversationInfo = styled.div`
   width: 100%;
-  /* padding-top: 5px; */
 `;
 
 const ConversationLastUser = styled.div`
@@ -99,61 +96,43 @@ const Count = styled.div`
 
 type Props = {
   conversation: any;
-  // setConversations: React.Dispatch<any>;
-  // setConversation: React.Dispatch<any>;
 };
 
-const Conversation: React.FC<Props> = ({
-  conversation,
-  // setConversations,
-  // setConversation,
-}) => {
-  // const { meUserData } = useContext(AuthContext);
-  const date = DateTime.fromISO(conversation.createdAt).toLocaleString(
-    // DateTime.DATETIME_MED
-    {
-      day: "numeric",
-      month: "long",
-      hour: "numeric",
-      minute: "numeric",
-    }
-  );
-
-  // console.log("TESTSTSTS", conversation.messages);
+const Conversation: React.FC<Props> = ({ conversation }) => {
+  const date = DateTime.fromISO(conversation.createdAt).toLocaleString({
+    day: "numeric",
+    month: "long",
+    hour: "numeric",
+    minute: "numeric",
+  });
 
   const { request } = useHttp();
   const { meUserData, setConversations } = useContext(AuthContext);
   const { online } = useContext(OnlineContext);
-  const history = useHistory();
 
   const unReadMessagesCount = conversation.messages.filter(
     (el: any) => el.isRead === false && el.user._id !== meUserData?._id
   ).length;
-  conversation.messages.forEach((el: any) => {
-    // console.log(el.isRead, el);
-  });
+  conversation.messages.forEach((el: any) => {});
 
-  // console.log("online conversations", online);
   const handleDeleteConversation = async () => {
     const res = window.confirm(
       "Are you sure you want to delete this conversation?"
     );
 
-    // console.log(res);
     if (res) {
       try {
-        const response = await request(
-          `/api/conversation/${conversation._id}`,
-          "DELETE"
-        );
         setConversations((prevState: any) => {
           const newState = prevState.filter(
             (el: any) => el._id !== conversation._id
           );
           return newState;
         });
-        history.push("/messages");
-        // console.log("response", response);
+
+        const response = await request(
+          `/api/conversation/${conversation._id}`,
+          "DELETE"
+        );
       } catch (e) {
         console.log(e);
       }

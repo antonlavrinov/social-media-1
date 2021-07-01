@@ -39,7 +39,6 @@ const CustomNotification = forwardRef<
   }
 >(({ id, message, type }, ref) => {
   const { closeSnackbar } = useSnackbar();
-  console.log("type", type);
 
   return (
     <Wrapper ref={ref}>

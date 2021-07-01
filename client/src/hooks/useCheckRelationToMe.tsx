@@ -35,7 +35,7 @@ export const useCheckRelationToMe = (otherUserData: IUserData | null) => {
     let status = checkRelationToUser(otherUserData.friendRequest);
 
     setRelationToMe(status);
-  }, [otherUserData]);
+  }, [otherUserData, meUserData?._id, relationToMe]);
 
   return { relationToMe, setRelationToMe };
 };

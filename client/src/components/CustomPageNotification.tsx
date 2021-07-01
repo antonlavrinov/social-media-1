@@ -1,7 +1,6 @@
 import { useSnackbar } from "notistack";
 import React, { forwardRef } from "react";
 import styled from "styled-components";
-import { Avatar } from "../styled-components/global";
 import { ReactComponent as CrossIcon } from "../assets/icons/cross-icon.svg";
 
 const Wrapper = styled.div<{ type?: "success" | "error" }>`
@@ -35,11 +34,6 @@ const NotificationText = styled.div`
   color: white;
 `;
 
-type MessageType = {
-  type: "error" | "success";
-  text: string;
-};
-
 const CustomPageNotification = forwardRef<
   HTMLDivElement,
   {
@@ -48,7 +42,6 @@ const CustomPageNotification = forwardRef<
   }
 >(({ id, message }, ref) => {
   const { closeSnackbar } = useSnackbar();
-  console.log("mes", message);
 
   return (
     <Wrapper ref={ref} type={message.type}>

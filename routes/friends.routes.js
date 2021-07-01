@@ -6,7 +6,6 @@ const {
 } = require("../controllers/friends.controllers");
 const { auth } = require("../middlewares/auth.middleware");
 const router = Router();
-//create new friend_request
 
 router.get("/friends/:id", auth, getFriends);
 

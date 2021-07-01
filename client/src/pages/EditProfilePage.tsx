@@ -3,12 +3,10 @@ import React, { useState, useContext, useRef } from "react";
 import { useHttp } from "../hooks/useHttp";
 import { AuthContext } from "../context/AuthContext";
 import useNotistack from "../hooks/useNotistack";
-import { ReactComponent as ArrowIcon } from "../assets/icons/arrow-more-icon.svg";
-
 import styled from "styled-components";
 import PhotoCameraIcon from "@material-ui/icons/PhotoCamera";
-import Modal from "@material-ui/core/Modal";
 import Select from "react-select";
+
 import {
   Input,
   TextArea,
@@ -17,12 +15,10 @@ import {
   ContentBoxContainer,
   Separator,
 } from "../styled-components/global";
-import { useUploadImages } from "../hooks/useUploadImages";
+
 import Spinner from "../components/Spinner";
-import Tippy from "@tippyjs/react";
-import { useTippyVisibility } from "../hooks/useTippyVisibility";
+
 import Resizer from "react-image-file-resizer";
-import { useEffect } from "react";
 
 export interface IUser {
   _id?: string;
@@ -41,7 +37,6 @@ const ImageUpload = styled.div<{
 }>`
   width: 100px;
   height: 100px;
-  /* margin: 0 auto; */
   border-radius: 100px;
   margin-bottom: 10px;
   border: 1px solid rgba(0, 0, 0, 0.2);
@@ -85,7 +80,6 @@ const ImageUpload = styled.div<{
 const ImageLoading = styled.div`
   width: 100px;
   height: 100px;
-  /* margin: 0 auto; */
   border-radius: 100px;
   margin-bottom: 10px;
   position: relative;
@@ -120,18 +114,6 @@ const Title = styled.div`
   letter-spacing: 0;
 `;
 
-const SelectBox = styled.div`
-  border: var(--border-primary);
-  border-radius: var(--border-radius-primary);
-  padding: 8px 13px;
-  display: flex;
-  /* justify-content: flex-end; */
-  align-items: center;
-  svg {
-    margin-left: auto;
-  }
-`;
-
 const EditProfilePage = () => {
   const auth = useContext(AuthContext);
   const { handlePageNotification } = useNotistack();
@@ -146,25 +128,13 @@ const EditProfilePage = () => {
     aboutMe,
     city,
   });
-  // const [birthday, setBirthday] = useState({
-  //   day: 0,
-  //   month: 0,
-  //   year: 0,
-  // });
+
   const [readyToSubmit, setReadyToSubmit] = useState(false);
 
-  const { error, request, loading } = useHttp();
-  const { visible, show, hide } = useTippyVisibility();
+  const { request, loading } = useHttp();
+
   const [avatarLoading, setAvatarLoading] = useState<boolean>(false);
   const ref = useRef<null | HTMLInputElement>(null);
-
-  // const [selectedDate, setSelectedDate] = React.useState<any | null>(
-  //   new Date("2014-08-18T21:11:54")
-  // );
-
-  // const handleDateChange = (date: any | null) => {
-  //   setSelectedDate(date);
-  // };
 
   const months = [
     "January",
@@ -182,18 +152,30 @@ const EditProfilePage = () => {
   ];
 
   const [selectedDayOption, setSelectedDayOption] = useState<any>({
-    value: new Date(credentials.dateOfBirth)?.getDate(),
-    label: new Date(credentials.dateOfBirth)?.getDate(),
+    value: credentials.dateOfBirth
+      ? new Date(credentials.dateOfBirth)?.getDate()
+      : null,
+    label: credentials.dateOfBirth
+      ? new Date(credentials.dateOfBirth)?.getDate()
+      : null,
   });
 
   const [selectedMonthOption, setSelectedMonthOption] = useState<any>({
-    value: new Date(credentials.dateOfBirth)?.getMonth(),
-    label: months[new Date(credentials.dateOfBirth)?.getMonth()],
+    value: credentials.dateOfBirth
+      ? new Date(credentials.dateOfBirth)?.getMonth()
+      : null,
+    label: credentials.dateOfBirth
+      ? months[new Date(credentials.dateOfBirth)?.getMonth()]
+      : null,
   });
 
   const [selectedYearOption, setSelectedYearOption] = useState<any>({
-    value: new Date(credentials.dateOfBirth)?.getFullYear(),
-    label: new Date(credentials.dateOfBirth)?.getFullYear(),
+    value: credentials.dateOfBirth
+      ? new Date(credentials.dateOfBirth)?.getFullYear()
+      : null,
+    label: credentials.dateOfBirth
+      ? new Date(credentials.dateOfBirth)?.getFullYear()
+      : null,
   });
 
   const handleDayChange = (date: any | null) => {
@@ -366,20 +348,14 @@ const EditProfilePage = () => {
   const handleSelectedChange = (selectedOption: any) => {
     setSelectedGenderOption(selectedOption);
     setReadyToSubmit(true);
-    // console.log(`Option selected:`, selectedOption);
   };
 
   console.log("selectedGenderOption", selectedGenderOption);
   console.log("gender", auth.meUserData?.gender);
 
-  // useEffect(() => {
-  //   setSelectedGenderOption(auth.meUserData?.gender);
-  // }, []);
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // console.log("submit");
       console.log(
         "submit",
         new Date(
@@ -392,14 +368,23 @@ const EditProfilePage = () => {
         selectedDayOption,
         new Date(2017, 4, 32)
       );
-      const data = await request(`/api/user/${auth.meUserData!._id}`, "PUT", {
-        ...credentials,
-        gender: selectedGenderOption.value,
-        dateOfBirth: new Date(
+
+      let dateOfBirth: any | Date = null;
+      if (
+        selectedYearOption.value &&
+        selectedMonthOption.value &&
+        selectedDayOption.value
+      ) {
+        dateOfBirth = new Date(
           selectedYearOption.value,
           selectedMonthOption.value,
           selectedDayOption.value
-        ),
+        );
+      }
+      const data = await request(`/api/user/${auth.meUserData!._id}`, "PUT", {
+        ...credentials,
+        gender: selectedGenderOption.value,
+        dateOfBirth,
       });
 
       const notification = {
@@ -414,17 +399,12 @@ const EditProfilePage = () => {
       });
       handlePageNotification(notification);
       setReadyToSubmit(false);
-
-      // console.log(data);
-
-      // auth.login(data.accessToken, data.userData);
     } catch (e) {
       const notification = {
         text: e.message,
         type: "error",
       };
       handlePageNotification(notification);
-      // console.log("request", e);
     }
   };
 
@@ -433,7 +413,7 @@ const EditProfilePage = () => {
       ...credentials,
       [e.target.name]: e.target.value,
     });
-    // console.log(e.target.name);
+
     setReadyToSubmit(true);
   };
 
@@ -441,10 +421,10 @@ const EditProfilePage = () => {
     new Promise((resolve) => {
       Resizer.imageFileResizer(
         file,
-        300,
+        600,
         600,
         "JPEG",
-        80,
+        100,
         0,
         (uri) => {
           resolve(uri);
@@ -472,39 +452,9 @@ const EditProfilePage = () => {
         console.log(e);
         setAvatarLoading(false);
       }
-
-      // const reader = new FileReader();
-      // reader.readAsDataURL(file);
-      // reader.onload = async () => {
-
-      // };
       setReadyToSubmit(true);
     }
   };
-
-  const selectPopup = (
-    <ContentBox
-      onClick={hide}
-      style={{
-        minWidth: "100%",
-        width: "100%",
-        position: "absolute",
-        top: 0,
-        left: 0,
-      }}
-    >
-      dsffdfd
-      {/* <EditPostPopup>
-        <EditPostPopupSelect onClick={() => handleEditMode(true)}>
-          Редактировать
-        </EditPostPopupSelect>
-
-        <EditPostPopupSelect onClick={handleDeletePost}>
-          Удалить
-        </EditPostPopupSelect>
-      </EditPostPopup> */}
-    </ContentBox>
-  );
 
   return (
     <ContentBox style={{ maxWidth: "480px" }}>
@@ -586,33 +536,24 @@ const EditProfilePage = () => {
                 onChange={handleDayChange}
                 options={dayOptions}
                 placeholder="Select gender"
-                // defaultValue={credentials.dateOfBirth.getDate()}
                 className={"daySelect"}
                 classNamePrefix={"customSelectInner"}
-                // style={{ flexGrow: 1 }}
               />
               <Select
                 value={selectedMonthOption}
                 onChange={handleMonthChange}
                 options={monthOptions}
                 placeholder="Select gender"
-                // defaultValue={{
-                //   value: credentials.dateOfBirth.getMonth(),
-                //   label: "sd",
-                // }}
                 className={"monthSelect"}
                 classNamePrefix={"customSelectInner"}
-                // style={{ flexGrow: 1 }}
               />
               <Select
                 value={selectedYearOption}
                 onChange={handleYearChange}
                 options={yearOptions}
                 placeholder="Select gender"
-                // defaultValue={credentials.dateOfBirth.getFullYear()}
                 className={"yearSelect"}
                 classNamePrefix={"customSelectInner"}
-                // style={{ flexGrow: 1 }}
               />
             </EditContent>
           </EditField>
@@ -625,7 +566,6 @@ const EditProfilePage = () => {
                 value={credentials.city}
                 onChange={handleChange}
                 disabled={loading}
-                // style={{ maxWidth: "100%", display: "block" }}
               />
             </EditContent>
           </EditField>
@@ -644,46 +584,6 @@ const EditProfilePage = () => {
             </EditContent>
           </EditField>
 
-          {/* <Input
-              name="city"
-              id="city"
-              value={credentials.city}
-              onChange={handleChange}
-              disabled={loading}
-            />
-            <TextField
-              id="gender"
-              name="gender"
-              select
-              label="Select gender"
-              value={credentials.gender}
-              onChange={handleChange}
-              style={{ width: "100%" }}
-              // helperText="Please select gender"
-              variant="outlined"
-            >
-              {["Male", "Femaile"].map((option, idx) => (
-                <MenuItem key={idx} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField> */}
-
-          {/* <Grid item xs={12}>
-            <KeyboardDatePicker
-              disableToolbar
-              variant="inline"
-              format="MM/dd/yyyy"
-              margin="normal"
-              id="date-picker-inline"
-              label="Date picker inline"
-              value={selectedDate}
-              onChange={handleDateChange}
-              KeyboardButtonProps={{
-                "aria-label": "change date",
-              }}
-            />
-          </Grid> */}
           <EditField>
             <EditTitle></EditTitle>
             <EditContent>

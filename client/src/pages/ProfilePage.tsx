@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useContext } from "react";
+import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import styled from "styled-components";
 import Friends from "../components/profile-page/Friends";
@@ -11,13 +11,12 @@ import { AuthContext } from "../context/AuthContext";
 import { UserContext } from "../context/UserContext";
 import { useLoadUser } from "../hooks/useLoadUser";
 import { ContentBox, ContentBoxContainer } from "../styled-components/global";
+import { ReactComponent as SpiderWeb } from "../assets/icons/spider-web.svg";
 
 import Info from "./../components/profile-page/Info";
 const Avatar = styled.img`
   width: 100%;
-  /* margin-right: 15px; */
   margin-bottom: 10px;
-  /* object-fit: contain; */
 `;
 
 const LeftSide = styled.div`
@@ -49,34 +48,27 @@ const NoPosts = styled.div`
   span {
     color: var(--text-color-secondary);
   }
+  svg {
+    fill: var(--text-color-secondary);
+    width: 100px;
+    margin-top: 20px;
+    opacity: 0.6;
+  }
 `;
-
-// export const ContentBox = styled.div`
-//   background: white;
-//   padding: 20px;
-//   box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
-//   border-radius: 5px;
-// `;
 
 const AvatarWrapper = styled.div``;
 
 const PersonalProfilePage = () => {
   const { id: slugId } = useParams<any>();
-  const {
-    userData,
-    setUserData,
-    isPersonal,
-    loading,
-    meUserData,
-    setMeUserData,
-  } = useLoadUser(slugId);
+  const { userData, setUserData, isPersonal, loading } = useLoadUser(slugId);
 
   if (!userData || loading) {
     return (
-      <div style={{ minHeight: "550px" }}></div>
-      // <SpinnerWrapper>
-      //   <Spinner />
-      // </SpinnerWrapper>
+      <div style={{ minHeight: "550px" }}>
+        <SpinnerWrapper>
+          <Spinner />
+        </SpinnerWrapper>
+      </div>
     );
   }
 
@@ -92,8 +84,8 @@ export default PersonalProfilePage;
 const Page = () => {
   const { userData, setUserData, isPersonal } = useContext(UserContext);
   const { meUserData, setMeUserData } = useContext(AuthContext);
-  const { firstName, lastName, avatar, wall } = userData!;
-  console.log("user data", userData);
+  const { avatar, wall } = userData!;
+
   return (
     <div className="profile" style={{ minHeight: "700px" }}>
       <LeftSide>
@@ -106,13 +98,11 @@ const Page = () => {
           </ContentBoxContainer>
         </ContentBox>
         <ContentBox>
-          {/* <ContentBoxContainer> */}
           <Friends
             isPersonal={isPersonal}
             friends={userData?.friends}
             _id={userData?._id!}
           />
-          {/* </ContentBoxContainer> */}
         </ContentBox>
       </LeftSide>
       <RightSide>
@@ -138,18 +128,16 @@ const Page = () => {
                 <span>
                   Post something on your wall by writing in a text field above!
                 </span>
+                <SpiderWeb />
               </>
             ) : (
               <>
                 <div>Empty wall...</div>
-                <span>
-                  You can make this wall alive by posting somethin on it!
-                </span>
+                <SpiderWeb />
               </>
             )}
           </NoPosts>
         )}
-        {/* {!isPersonal && renderFriendRequestButton(relationToMe)} */}
       </RightSide>
     </div>
   );

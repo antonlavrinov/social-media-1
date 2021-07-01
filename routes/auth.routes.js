@@ -15,7 +15,9 @@ router.post(
   [
     check("firstName", "Напишите имя").not().isEmpty(),
     check("lastName", "Напишите фамилию").not().isEmpty(),
-    check("email", "Email is incorrect").isEmail(),
+    check("email", "Email is incorrect")
+      .isEmail()
+      .normalizeEmail({ gmail_remove_dots: false }),
     check(
       "password",
       "The password must contain at least 6 characters"
@@ -27,7 +29,9 @@ router.post(
 router.post(
   "/auth/login",
   [
-    check("email", "Email is incorrect").isEmail().normalizeEmail(),
+    check("email", "Email is incorrect")
+      .isEmail()
+      .normalizeEmail({ gmail_remove_dots: false }),
     check("password", "Enter password").not().isEmpty(),
   ],
 
@@ -37,10 +41,5 @@ router.post(
 router.post("/auth/logout", logoutUser);
 
 router.post("/auth/refresh_token", generateAccessToken);
-
-// router.get("/hi", (req, res) => {
-//   // console.log(req);
-//   res.json("Hellooooo");
-// });
 
 module.exports = router;

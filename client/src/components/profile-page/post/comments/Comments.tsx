@@ -11,8 +11,6 @@ const PostCommentsWrapper = styled.div`
   }
 `;
 
-// const CommentText = styled.div``;
-
 type Props = {
   comments: any;
   setComments: React.Dispatch<React.SetStateAction<boolean>>;
@@ -20,8 +18,6 @@ type Props = {
 };
 
 const PostComments: React.FC<Props> = ({ comments, setComments, post }) => {
-  // console.log("comments", comments);
-
   return (
     <PostCommentsWrapper>
       {comments.map((comment: any) => {

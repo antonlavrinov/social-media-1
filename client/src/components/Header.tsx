@@ -14,10 +14,9 @@ import MailIcon from "@material-ui/icons/Mail";
 import NotificationsIcon from "@material-ui/icons/Notifications";
 import MoreIcon from "@material-ui/icons/MoreVert";
 import { useStyles } from "./useStyles";
-// import { useAuth } from "../hooks/useAuth";
-// import { useHistory } from "react-router-dom";
+
 import { AuthContext } from "../context/AuthContext";
-import { Container } from "@material-ui/core";
+
 import { useHttp } from "../hooks/useHttp";
 
 export default function Header() {
@@ -51,7 +50,6 @@ export default function Header() {
 
   const handleLogOut = async () => {
     try {
-      // console.log(credentials);
       await request("/api/auth/logout", "POST");
 
       auth.logout();
@@ -59,8 +57,6 @@ export default function Header() {
       console.log(e);
     }
   };
-
-  // console.log("history", history);
 
   const menuId = "primary-search-account-menu";
   const renderMenu = (
@@ -121,12 +117,8 @@ export default function Header() {
   );
 
   return (
-    <div
-      // className={classes.grow}
-      style={{ zIndex: 10000 }}
-    >
+    <div style={{ zIndex: 10000 }}>
       <AppBar position="fixed">
-        {/* <Container maxWidth="md"> */}
         <Toolbar>
           <IconButton
             edge="start"
@@ -153,7 +145,6 @@ export default function Header() {
             />
           </div>
           <div className={classes.grow} />
-          {/* {isAuthenticated && ( */}
           <>
             <div className={classes.sectionDesktop}>
               <IconButton aria-label="show 4 new mails" color="inherit">
@@ -192,15 +183,9 @@ export default function Header() {
               </IconButton>
             </div>
           </>
-          {/* // )} */}
-          {/* {isAuthenticated && (
-              <> */}
           {renderMobileMenu}
           {renderMenu}
-          {/* </>
-            )} */}
         </Toolbar>
-        {/* </Container> */}
       </AppBar>
     </div>
   );

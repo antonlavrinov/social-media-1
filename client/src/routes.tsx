@@ -1,51 +1,43 @@
-import { useContext, forwardRef, useCallback, useState } from "react";
 import { Switch, Route, Redirect } from "react-router-dom";
 import Layout from "./components/Layout";
 import EditProfilePage from "./pages/EditProfilePage";
 import FriendsPage from "./pages/FriendsPage";
 import MessagesPage from "./pages/MessagesPage";
 import SignInSignUpPage from "./pages/SignInSignUpPage";
-// import SignUpPage from "./pages/SignUpPage";
-import { SnackbarProvider, useSnackbar } from "notistack";
+
+import { SnackbarProvider } from "notistack";
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import MomentUtils from "@date-io/moment";
-import { AuthContext } from "./context/AuthContext";
-import NotFoundPage from "./pages/NotFoundPage";
+
 import ProfilePage from "./pages/ProfilePage";
 import ConversationPage from "./pages/ConversationPage";
 import { SocketClient } from "./SocketClient";
-import CustomNotification from "./components/CustomNotification";
-import SignInSignUp from "./pages/SignInSignUpPage";
-// import { MessagesContext } from "./context/MessagesContext";
+
+import styled from "styled-components";
+import Spinner from "./components/Spinner";
+import SearchPage from "./pages/SearchPage";
+
+const SpinnerWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+`;
 
 export const useRoutes = (
   isAuthenticated: boolean,
   meUserId: string | undefined,
   ready: boolean
 ) => {
-  // const auth = useContext(AuthContext);
-
-  // console.log("App updated");
-
   if (!ready) {
-    return <div>Loading...</div>;
+    return (
+      <SpinnerWrapper>
+        <Spinner />
+      </SpinnerWrapper>
+    );
   }
 
   if (isAuthenticated) {
-    // console.log("auth", isAuthenticated);
-
-    // const SnackMessage = (id: any, message: "string") => (
-    //   <div>
-    //     <div
-    //       onClick={() => {
-    //         alert(`I belong to snackbar with key ${id}`);
-    //       }}
-    //     >
-    //       'Alert'
-    //     </div>
-    //   </div>
-    // );
-
     return (
       <Layout>
         <SnackbarProvider
@@ -59,13 +51,13 @@ export const useRoutes = (
           <SocketClient />
           <MuiPickersUtilsProvider utils={MomentUtils}>
             <Switch>
-              {/* <Redirect exact from="/" to={`/profile/${meUserId}`} /> */}
               <Route path="/messages" exact component={MessagesPage} />
               <Route
                 path="/conversation/:id"
                 exact
                 component={ConversationPage}
               />
+              <Route path="/search" component={SearchPage} />
               <Route path="/friends" component={FriendsPage} />
               <Route
                 path="/profile/edit/:id"
@@ -74,7 +66,6 @@ export const useRoutes = (
               />
               <Route path={`/profile/:id`} exact component={ProfilePage} />
               <Redirect to={`/profile/${meUserId}`} />
-              {/* <Route path="*" component={NotFoundPage} /> */}
             </Switch>
           </MuiPickersUtilsProvider>
         </SnackbarProvider>
@@ -85,7 +76,6 @@ export const useRoutes = (
   return (
     <Switch>
       <Redirect exact from="/" to="/signup" />
-      {/* <Route path="/signin" exact component={SignInPage} /> */}
       <Route path="/signup" exact component={SignInSignUpPage} />
       <Redirect to="/signup" />
     </Switch>

@@ -6,7 +6,6 @@ import {
   CustomDate,
   CustomLink,
   Separator,
-  svgPrimaryStyle,
   svgSecondaryStyle,
 } from "../../../../styled-components/global";
 import { Link } from "react-router-dom";
@@ -29,13 +28,6 @@ const CommentWrapper = styled.div`
   position: relative;
 `;
 
-const UserAvatar = styled.img`
-  width: 35px;
-  height: 35px;
-  border-radius: 100px;
-  margin-right: 15px;
-`;
-
 const CommentContent = styled.div`
   position: relative;
 `;
@@ -45,8 +37,6 @@ const CommentText = styled.div``;
 const CommentInfo = styled.div`
   display: flex;
 `;
-
-const CommentDate = styled.div``;
 
 const CommentOptions = styled.div`
   position: absolute;
@@ -83,7 +73,6 @@ const LikeIconWrapper = styled.div<{ liked: boolean }>`
     ${svgSecondaryStyle}
     margin-right: 3px;
     position: relative;
-    /* top: px; */
 
     ${(props) =>
       props.liked &&
@@ -99,7 +88,6 @@ const LikeIconWrapper = styled.div<{ liked: boolean }>`
 
 const LikeCount = styled.div`
   margin-left: 3px;
-  /* color: var(--text-color-secondary); */
 `;
 
 type Props = {
@@ -111,7 +99,6 @@ type Props = {
 const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
   const { visible, show, hide } = useTippyVisibility();
   const [canDelete, setCanDelete] = useState<boolean>(true);
-  // const [likes, setLikes] = useState<any>(comment.likes);
   const { request } = useHttp();
   const { handlePageNotification } = useNotistack();
   const { isPersonal } = useContext(UserContext);
@@ -138,13 +125,14 @@ const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
 
   const handleDeleteComment = async (postId: string) => {
     try {
-      const res = await request(`/api/comment/${comment._id}`, "DELETE", {
-        postId,
-      });
       setComments((prevState: any) => {
         const newArr = prevState.filter((el: any) => el._id !== comment._id);
         return newArr;
       });
+      const res = await request(`/api/comment/${comment._id}`, "DELETE", {
+        postId,
+      });
+
       handlePageNotification({ type: "success", text: res.message });
     } catch (e) {
       console.log(e);
@@ -157,7 +145,7 @@ const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
       <EditPopup>
         {canDelete && (
           <EditPopupSelect onClick={handleDeleteComment.bind(null, post._id)}>
-            Удалить
+            Delete
           </EditPopupSelect>
         )}
       </EditPopup>
@@ -187,8 +175,6 @@ const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
           <CommentText>{comment.content}</CommentText>
           <CommentInfo>
             <CustomDate style={{ marginTop: "5px" }}>{date}</CustomDate>
-
-            {/* <CommentLike></CommentLike> */}
           </CommentInfo>
         </CommentContent>
         {canDelete && (
@@ -201,7 +187,6 @@ const Comment: React.FC<Props> = ({ comment, setComments, post }) => {
             offset={[0, 5]}
             visible={visible}
             onClickOutside={hide}
-            // hideOnClick={"toggle"}
           >
             <CommentOptions onClick={visible ? hide : show}>
               <CogwheelIcon />

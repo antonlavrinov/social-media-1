@@ -11,27 +11,24 @@ const useLikeComment = (comment: any, meUserData: IUserData | null) => {
   const { request } = useHttp();
   const { socket } = useContext(AuthContext);
   const { handlePageNotification } = useNotistack();
-  // console.log("commentttttt", likes);
 
   useEffect(() => {
     if (likes.find((like: IUserData) => like._id === meUserData!._id)) {
       setIsLike(true);
     }
-    // console.log("likes", likes);
   }, [likes, meUserData!._id]);
 
   const handleLikeComment = async () => {
     if (loadLike) return;
-    // if (likes.find((like: IUserData) => like._id !== meUserData!._id)) {
+
     setIsLike(true);
     setLoadLike(true);
     setLikes([...likes, meUserData]);
-    // console.log("postid", post._id);
+
     try {
       await request(`/api/comment/like/${comment._id}`, "PUT");
 
       if (comment.user._id !== meUserData?._id) {
-        console.log("i can like this comment", comment);
         const notification = await request(`/api/notify`, "POST", {
           text: "liked your comment",
           url: `/profile/${comment.user._id}`,
@@ -55,7 +52,7 @@ const useLikeComment = (comment: any, meUserData: IUserData | null) => {
     setIsLike(false);
     setLoadLike(true);
     const newArr = likes.filter((el: any) => el._id !== meUserData?._id);
-    // console.log("newArr", newArr);
+
     setLikes(newArr);
     try {
       await request(`/api/comment/unlike/${comment._id}`, "PUT");

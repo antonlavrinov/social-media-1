@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import Tippy from "@tippyjs/react";
-import { Link, useHistory } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Avatar,
   ContentBox,
@@ -33,24 +33,16 @@ const NotificationsIconWrapper = styled.div`
 
 const NotificationsPopup = styled.div`
   min-width: 250px;
-  /* min-height: 300px; */
   max-height: 300px;
   overflow-y: auto;
   display: flex;
   flex-flow: column nowrap;
-  /* &::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    border: 1px solid black;
-  } */
   &::-webkit-scrollbar {
     width: 5px;
   }
 
   &::-webkit-scrollbar-track {
     background: none;
-    /* box-shadow: inset 0 0 10px black; */
   }
 
   &::-webkit-scrollbar-thumb {
@@ -99,7 +91,6 @@ const Notification: React.FC<NotificationProps> = ({
   notification,
   visible,
 }) => {
-  // const history = useHistory();
   const date = DateTime.fromISO(notification.createdAt).toLocaleString({
     day: "numeric",
     month: "long",
@@ -108,13 +99,9 @@ const Notification: React.FC<NotificationProps> = ({
   });
   const { request } = useHttp();
   const { setNotifications } = useContext(AuthContext);
-  // console.log("NOTIFICATION", notification);
 
   const handleReadNotification = async () => {
     try {
-      console.log("read notification", notification);
-      const res = await request(`/api/notify/${notification._id}`, "PUT");
-      console.log("i read notificatio", res);
       setNotifications((prevState: any) => {
         const notificIdx = prevState.findIndex(
           (el: any) => el._id === notification._id
@@ -124,22 +111,16 @@ const Notification: React.FC<NotificationProps> = ({
           ...notification,
           isRead: true,
         };
-        // console.log("notific", notific);
-        // console.log("notificIdx", notificIdx);
-
-        // console.log("first slice", [...prevState.slice(0, notificIdx)]);
-        // console.log("second slice", [...prevState.slice(notificIdx + 1)]);
 
         const newArr = [
           ...prevState.slice(0, notificIdx),
           notific,
           ...prevState.slice(notificIdx + 1),
         ];
-        // console.log("prevState", prevState);
-        // console.log("newArr", newArr);
 
         return newArr;
       });
+      const res = await request(`/api/notify/${notification._id}`, "PUT");
     } catch (e) {
       console.log(e);
     }
@@ -177,13 +158,7 @@ type Props = {
   setNotifications: React.Dispatch<any>;
   notifications: any;
 };
-const Notifications: React.FC<Props> = ({
-  notifications,
-  setNotifications,
-}) => {
-  // const count = notifications.length;
-  // const [notificationsCount, setNotificationsCount] = useState<number>(count);
-  // console.log("length", notificationsCount);
+const Notifications: React.FC<Props> = ({ notifications }) => {
   const { visible, show, hide } = useTippyVisibility();
 
   const unreadNotifications = notifications.filter(
@@ -210,8 +185,6 @@ const Notifications: React.FC<Props> = ({
         {notificationList.length > 0 && visible ? (
           <>
             {notificationList.map((notification: any, idx: number) => {
-              // console.log("not", notification);
-
               return (
                 <Notification
                   key={idx}
@@ -222,7 +195,17 @@ const Notifications: React.FC<Props> = ({
             })}
           </>
         ) : (
-          <div>No notifications yet...</div>
+          <div
+            style={{
+              display: "flex",
+              textAlign: "center",
+              justifyContent: "center",
+              color: "var(--text-color-secondary)",
+              padding: "45px 15px",
+            }}
+          >
+            No notifications yet...
+          </div>
         )}
       </NotificationsPopup>
     </ContentBox>
@@ -244,7 +227,6 @@ const Notifications: React.FC<Props> = ({
         {unreadNotifications.length > 0 && (
           <NotificationsCount>{unreadNotifications.length}</NotificationsCount>
         )}
-        {console.log("notifications", notifications)}
       </NotificationsIconWrapper>
     </Tippy>
   );

@@ -12,12 +12,10 @@ const {
 const { auth } = require("../middlewares/auth.middleware");
 const router = Router();
 
-//create new friend_request
 router.post("/post", auth, createPost);
 
 router.put("/post/:id", auth, updatePost);
 
-//delete friend_request
 router.delete("/post/:id", auth, deletePost);
 router.get("/post/:id", auth, getPost);
 router.get("/posts", auth, getPosts);

@@ -11,25 +11,11 @@ import {
 import Emojis from "../../Emojis";
 import { ReactComponent as ImageUploadIcon } from "../../../assets/icons/image-upload-icon.svg";
 import { ReactComponent as ImageRemoveIcon } from "../../../assets/icons/image-remove-icon.svg";
-import { AuthContext } from "../../../context/AuthContext";
 import { UserContext } from "../../../context/UserContext";
 import Spinner from "../../Spinner";
 
 const PostEditContent = styled.div`
   position: relative;
-`;
-
-const PreviewImage = styled.img<{ count?: number }>`
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-  margin-right: 5px;
-  ${(props) =>
-    props.count === 2 &&
-    `
-    width: 50%;
-    height: auto;
-  `}
 `;
 
 const ImagesPreviewWrapper = styled.div<{ exists: boolean }>`
@@ -50,14 +36,6 @@ const ImageLoading = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-`;
-
-const PreviewImagesWrapper = styled.div`
-  display: flex;
-  /* margin-left: 15px;
-  margin-bottom: 13px; */
-
-  /* margin-top: 1px; */
 `;
 
 const PreviewImageWrapper = styled.div`
@@ -134,7 +112,6 @@ const PostEdit: React.FC<Props> = ({ post, isPersonal, handleEditMode }) => {
   };
 
   const handleChooseEmoji = (emoji: string): void => {
-    // console.log("emoji", emoji);
     setEditText(editText + emoji);
   };
 
@@ -150,7 +127,6 @@ const PostEdit: React.FC<Props> = ({ post, isPersonal, handleEditMode }) => {
         content: editText,
         images,
       };
-      const res = await request(`/api/post/${post._id}`, "PUT", updatedPost);
 
       const postIdx = userData!.wall.findIndex((el) => el._id === post._id);
       const pst = userData!.wall[postIdx];
@@ -162,16 +138,16 @@ const PostEdit: React.FC<Props> = ({ post, isPersonal, handleEditMode }) => {
         ...userData!.wall.slice(postIdx + 1),
       ];
       setUserData({ ...userData, wall: newWallArr });
-      handlePageNotification({ type: "success", text: res.message });
       handleEditMode(false);
+
+      const res = await request(`/api/post/${post._id}`, "PUT", updatedPost);
+      handlePageNotification({ type: "success", text: res.message });
     } catch (e) {
       console.log(e);
       handlePageNotification({ type: "error", text: e.message });
       handleEditMode(false);
     }
   };
-
-  // console.log("new post", post);
 
   return (
     <PostEditContent style={{ marginTop: "15px" }}>

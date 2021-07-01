@@ -48,30 +48,18 @@ app.use("/api", require("./routes/message.routes"));
 app.use("/api", require("./routes/conversation.routes"));
 app.use("/api", require("./routes/friends.routes"));
 app.use("/api", require("./routes/notification.routes"));
-// routes middleware
-// readdirSync("./routes").map((r) => app.use("/api", require("./routes/" + r)));
-// app.use();
-// console.log(process.env.PORT);
-// port
+
 const port = process.env.PORT || 5000;
 
-// const db =
-//   "mongodb+srv://anton:OZoNamhYQYBZ7f6v@cluster0.ifqtj.mongodb.net/app?retryWrites=true&w=majority";
-console.log("process", process.env.NODE_ENV);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static("client/build"));
-  // app.get("*", (req, res) => {
-  //   res.send(path.resolve(__dirname, "./client/build", "index.html"));
-  // });
+
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "./client/build", "index.html"));
   });
 } else {
-  // app.get("/", (req, res) => {
-  //   res.send("App in development");
-  // });
 }
-// console.log(process.env.DATABASE);
+
 const start = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI, {

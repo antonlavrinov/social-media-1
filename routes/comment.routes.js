@@ -10,12 +10,10 @@ const {
 const { auth } = require("../middlewares/auth.middleware");
 const router = Router();
 
-//create new friend_request
 router.post("/comment", auth, createComment);
 
 router.put("/comment/:id", auth, updateComment);
 
-//delete friend_request
 router.delete("/comment/:id", auth, deleteComment);
 
 router.put("/comment/like/:id", auth, likeComment);

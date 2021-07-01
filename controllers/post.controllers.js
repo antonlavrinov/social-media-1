@@ -1,12 +1,12 @@
 const { Types } = require("mongoose");
 const Post = require("../models/Post");
 const User = require("../models/User");
+const Comment = require("../models/Comment");
 
 exports.createPost = async (req, res) => {
   const { id: meId } = req.userMe;
   const { userId, content, images } = req.body;
-  console.log("credentials", meId, userId);
-  console.log("images");
+
   try {
     const post = new Post({
       user: meId,
@@ -17,13 +17,9 @@ exports.createPost = async (req, res) => {
     //если ты ставишь new: true когда создаешь схему, то при сохранении схемы выскочит ошибка
     //must have an id before saving
 
-    console.log(post);
-
     await post.save();
 
     await post.populate("user").execPopulate();
-
-    console.log("saved");
 
     await User.findOneAndUpdate({ _id: userId }, { $push: { wall: post._id } });
 
@@ -41,14 +37,13 @@ exports.createPost = async (req, res) => {
 };
 
 exports.updatePost = async (req, res) => {
-  console.log("Update post");
   const { id: meId } = req.userMe;
   const { id } = req.params;
   const { content, images } = req.body;
-  console.log("credentials", meId);
+
   try {
     const post = await Post.findOne({ _id: id, user: meId });
-    // console.log("posss", post);
+
     if (!post) {
       return res.status(400).json({
         message: "This post doesn't belong to you",
@@ -69,11 +64,8 @@ exports.updatePost = async (req, res) => {
 exports.deletePost = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  console.log("reached delete post", id);
-  //   const { content, images } = req.body;
 
   try {
-    //   console.log("credentials", meId, userId);
     const post = await Post.findOne({ _id: id, user: meId });
 
     const postOnMyWall = await User.findOne({ _id: meId, wall: id });
@@ -82,6 +74,10 @@ exports.deletePost = async (req, res) => {
       return res.status(400).json({
         message: "You cannot delete this post",
       });
+    }
+
+    for await (let comment of post.comments) {
+      await Comment.findOneAndDelete({ _id: comment._id });
     }
 
     await User.findOneAndUpdate(
@@ -106,8 +102,7 @@ exports.deletePost = async (req, res) => {
 exports.getPosts = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  //   const { content, images } = req.body;
-  //   console.log("credentials", meId, userId);
+
   try {
     await Post.findOneAndDelete({ _id: id });
     res.json({
@@ -124,8 +119,7 @@ exports.getPosts = async (req, res) => {
 exports.getPost = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  //   const { content, images } = req.body;
-  //   console.log("credentials", meId, userId);
+
   try {
     await Post.findOneAndDelete({ _id: id });
     res.json({
@@ -150,14 +144,12 @@ exports.likePost = async (req, res) => {
       });
     }
 
-    // console.log("ud", req.params);
-
     const updated = await Post.findOneAndUpdate(
       { _id: id },
       { $push: { likes: meId } },
       { new: true }
     );
-    // console.log("updated", updated);
+
     res.json({
       message: "Successfully liked a post!",
     });

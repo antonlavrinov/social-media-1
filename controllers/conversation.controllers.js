@@ -1,14 +1,11 @@
 const Conversation = require("../models/Conversation");
 const Message = require("../models/Message");
-const Post = require("../models/Post");
-const User = require("../models/User");
 
 exports.createConversation = async (req, res) => {
   const { id: meId } = req.userMe;
   const { userIds, content, images } = req.body;
 
   try {
-    await Message.deleteMany({});
     const existingConversation = await Conversation.findOne({
       users: { $all: [meId, ...userIds] },
     });
@@ -18,10 +15,7 @@ exports.createConversation = async (req, res) => {
         users: [meId, ...userIds],
       });
 
-      console.log("checking conversation", conversation);
-
       await conversation.save();
-      // console.log("conversation", conversation);
 
       const newMessage = new Message({
         user: meId,
@@ -33,14 +27,12 @@ exports.createConversation = async (req, res) => {
       await newMessage.save();
 
       await newMessage.populate("conversation user").execPopulate();
-      // console.log("newMessage", newMessage);
 
       const updatedConversation = await Conversation.findOneAndUpdate(
         { _id: conversation._id },
         { $push: { messages: newMessage._id } },
         { new: true }
       );
-      // console.log("conversation", conversation);
 
       await updatedConversation
         .populate({
@@ -60,15 +52,12 @@ exports.createConversation = async (req, res) => {
         })
         .execPopulate();
 
-      console.log("updated conversation", updatedConversation);
-
       res.json({
         message: "Successfully created a message!",
         conversation: updatedConversation,
         newMessage,
       });
     } else {
-      // console.log("else");
       const newMessage = new Message({
         user: meId,
         content,
@@ -77,8 +66,6 @@ exports.createConversation = async (req, res) => {
       });
       await newMessage.save();
       await newMessage.populate("conversation user").execPopulate();
-
-      console.log("created new message", newMessage);
 
       const newConversation = await Conversation.findOneAndUpdate(
         {
@@ -103,8 +90,6 @@ exports.createConversation = async (req, res) => {
           },
         });
 
-      // console.log("found one and updated");
-
       res.json({
         message: "Successfully created a conversation!",
         conversation: newConversation,
@@ -122,8 +107,6 @@ exports.createConversation = async (req, res) => {
 exports.deleteConversation = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
-  //   const { content, images } = req.body;
-  console.log("CONVERSATION ID", id);
 
   try {
     await Conversation.findOneAndDelete({ _id: id, users: meId });
@@ -143,8 +126,6 @@ exports.getConversation = async (req, res) => {
   const { id: meId } = req.userMe;
   const { id } = req.params;
 
-  //   const { content, images } = req.body;
-  //   console.log("credentials", meId, userId);
   try {
     const conversation = await Conversation.findOne({ _id: id })
       .populate("users")
@@ -156,7 +137,6 @@ exports.getConversation = async (req, res) => {
         },
       });
 
-    console.log("get conversation", conversation);
     res.json({
       message: "Conversation found!",
       conversation,
@@ -171,7 +151,6 @@ exports.getConversation = async (req, res) => {
 
 exports.getConversations = async (req, res) => {
   const { id: meId } = req.userMe;
-  console.log("reached conversations");
 
   try {
     const conversations = await Conversation.find({ users: meId })
@@ -193,7 +172,6 @@ exports.getConversations = async (req, res) => {
       })
       .sort({ updatedAt: -1 });
 
-    console.log("conver", conversations);
     res.json({
       message: "Conversations found!",
       conversations,

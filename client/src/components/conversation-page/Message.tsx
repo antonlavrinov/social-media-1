@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useContext } from "react";
 import styled from "styled-components";
 import {
   Avatar,
@@ -9,9 +9,8 @@ import { useHistory } from "react-router-dom";
 import { DateTime } from "luxon";
 import { useHttp } from "../../hooks/useHttp";
 import { ReactComponent as TrashIcon } from "../../assets/icons/trash-icon.svg";
-import { Socket } from "dgram";
 import { AuthContext } from "../../context/AuthContext";
-// import { ConversationContext } from "../../context/ConversationContext";
+
 const Wrapper = styled.div<{ isRead: boolean }>`
   padding: 15px;
   display: flex;
@@ -65,82 +64,45 @@ type Props = {
 };
 
 const Message: React.FC<Props> = ({ message, isMe, messages }) => {
-  // const [message, setMessage] = useState(msg);
-  const date = DateTime.fromISO(message.createdAt).toLocaleString(
-    // DateTime.DATETIME_MED
-    {
-      day: "numeric",
-      month: "long",
-      hour: "numeric",
-      minute: "numeric",
-    }
-  );
+  const date = DateTime.fromISO(message.createdAt).toLocaleString({
+    day: "numeric",
+    month: "long",
+    hour: "numeric",
+    minute: "numeric",
+  });
 
   const { request } = useHttp();
   const history = useHistory();
   const { socket, setConversations } = useContext(AuthContext);
-  // const { setConversation } = useContext(ConversationContext);
 
   const handleReadMessage = async () => {
-    console.log("handle read message", message);
     try {
-      const res = await request(`/api/read_message/${message._id}`, "PUT");
-
-      console.log("res", res);
-
-      // setConversation((prevState: any) => {
-      //   const msgIdx = prevState?.messages.findIndex(
-      //     (el: any) => el._id === res.readMsg._id
-      //   );
-
-      //   const messages = [
-      //     ...prevState?.messages.slice(0, msgIdx),
-      //     res.readMsg,
-      //     ...prevState?.messages.slice(msgIdx, prevState?.messages.length - 1),
-      //   ];
-
-      //   // const convNoMessage = prevState?.messages.filter(
-      //   //   (el: any) => el._id !== message._id
-      //   // );
-
-      //   const newConversation = {
-      //     ...prevState,
-      //     messages,
-      //   };
-      //   console.log("new conversation", newConversation);
-      //   return newConversation;
-      // });
-
       setConversations((prevState: any) => {
-        // console.log("message", message);
-        console.log("i'm setting conversations with this message", res.readMsg);
+        const newMessage = {
+          ...message,
+          isRead: true,
+        };
         const conversation = prevState.find(
-          (el: any) => el._id === res.readMsg.conversation._id
+          (el: any) => el._id === message.conversation._id
         );
 
         const conversationIdx = prevState.findIndex(
-          (el: any) => el._id === res.readMsg.conversation._id
+          (el: any) => el._id === message.conversation._id
         );
 
         const conversationMsgIdx = conversation.messages.findIndex(
-          (el: any) => el._id === res.readMsg._id
+          (el: any) => el._id === message._id
         );
         const messages = [
           ...conversation.messages.slice(0, conversationMsgIdx),
-          res.readMsg,
+          newMessage,
           ...conversation.messages.slice(conversationMsgIdx + 1),
         ];
-
-        console.log("messages", messages);
 
         const updatedConversation = {
           ...conversation,
           messages,
         };
-
-        console.log("updated conversation", updatedConversation);
-
-        // console.log("conversationIdx", conversationIdx);
 
         const newConversations = [
           ...prevState.slice(0, conversationIdx),
@@ -148,17 +110,11 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
           ...prevState.slice(conversationIdx + 1),
         ];
 
-        console.log("newConversations", newConversations);
-
         return newConversations;
       });
-      // setMessage((prevState: any) => {
-      //   // console.log("READ CONV", newCon);
-      //   return {
-      //     ...prevState,
-      //     isRead: true,
-      //   };
-      // });
+
+      const res = await request(`/api/read_message/${message._id}`, "PUT");
+
       socket.emit("readMessage", res.readMsg);
     } catch (e) {
       console.log(e);
@@ -181,7 +137,6 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
         );
         history.push("/messages");
         setConversations((prevState: any) => {
-          // console.log("message", message);
           const newArr = prevState.filter((el: any) => {
             return el._id !== message.conversation._id;
           });
@@ -192,10 +147,8 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
       }
     } else {
       try {
-        const res = await request(`/api/message/${message._id}`, "DELETE");
+        await request(`/api/message/${message._id}`, "DELETE");
         setConversations((prevState: any) => {
-          // console.log("message", message);
-          console.log("i'm deleting a message", res.readMsg);
           const conversation = prevState.find(
             (el: any) => el._id === message.conversation._id
           );
@@ -228,7 +181,6 @@ const Message: React.FC<Props> = ({ message, isMe, messages }) => {
   };
 
   useEffect(() => {
-    // console.log("is me", isMe);
     if (!isMe && !message.isRead) {
       console.log("read");
       handleReadMessage();

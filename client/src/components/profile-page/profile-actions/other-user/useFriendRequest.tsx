@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { AuthContext } from "../../../../context/AuthContext";
 
 import { useHttp } from "../../../../hooks/useHttp";
+import { v4 as uuidv4 } from "uuid";
 
 export const useFriendRequest = (
   userData: any,
@@ -9,18 +10,29 @@ export const useFriendRequest = (
   relationToMe: string,
   setRelationToMe: any
 ) => {
-  const { request } = useHttp();
+  const { request, loading } = useHttp();
 
   const { meUserData, setMeUserData, socket } = useContext(AuthContext);
 
   const handleSendFriendRequest = async () => {
     try {
+      const newId = uuidv4();
+
+      const newFriendRequest = {
+        createdAt: new Date().toISOString(),
+        recipient: userData._id,
+        requester: meUserData?._id,
+        status: "pending",
+        _id: newId,
+      };
+
+      setUserData({ ...userData, friendRequest: newFriendRequest });
+      setRelationToMe("me_sent_request");
       const res = await request("/api/friend-request/create", "POST", {
         userId: userData._id,
       });
 
       setUserData({ ...userData, friendRequest: res.friendRequest });
-      setRelationToMe("me_sent_request");
 
       const notification = {
         user: meUserData,
@@ -40,13 +52,17 @@ export const useFriendRequest = (
 
   const handleSendUnFriendRequest = async () => {
     try {
-      const res = await request(
-        `/api/friend-request/unfriend/${userData.friendRequest._id}`,
-        "PUT",
-        { userId: userData._id }
-      );
-
       setRelationToMe("user_sent_request");
+
+      const newId = uuidv4();
+
+      const newFriendRequest = {
+        createdAt: new Date().toISOString(),
+        recipient: meUserData?._id,
+        requester: userData._id,
+        status: "pending",
+        _id: newId,
+      };
 
       setUserData((prevState: any) => {
         const friends = prevState.friends.filter((friend: any) => {
@@ -54,7 +70,7 @@ export const useFriendRequest = (
         });
         return {
           ...prevState,
-          friendRequest: res.friendRequest,
+          friendRequest: newFriendRequest,
           friends,
         };
       });
@@ -64,8 +80,27 @@ export const useFriendRequest = (
         });
         return {
           ...prevState,
-          friendRequest: res.friendRequest,
+          friendRequest: newFriendRequest,
           friends: meFriends,
+        };
+      });
+
+      const res = await request(
+        `/api/friend-request/unfriend/${userData.friendRequest._id}`,
+        "PUT",
+        { userId: userData._id }
+      );
+
+      setUserData((prevState: any) => {
+        return {
+          ...prevState,
+          friendRequest: res.friendRequest,
+        };
+      });
+      setMeUserData((prevState: any) => {
+        return {
+          ...prevState,
+          friendRequest: res.friendRequest,
         };
       });
     } catch (e) {
@@ -75,18 +110,22 @@ export const useFriendRequest = (
 
   const handleAcceptFriendRequest = async () => {
     try {
-      const res = await request(
-        `/api/friend-request/accept/${userData.friendRequest._id}`,
-        "PUT",
-        { userId: userData._id }
-      );
-
       setRelationToMe("friend");
+
+      const newId = uuidv4();
+
+      const newFriendRequest = {
+        createdAt: new Date().toISOString(),
+        recipient: meUserData?._id,
+        requester: userData._id,
+        status: "accepted",
+        _id: newId,
+      };
 
       setUserData((prevState: any) => {
         return {
           ...prevState,
-          friendRequest: res.friendRequest,
+          friendRequest: newFriendRequest,
           friends: [...prevState?.friends, meUserData],
         };
       });
@@ -97,6 +136,25 @@ export const useFriendRequest = (
           friends: [...prevState?.friends, userData],
         };
       });
+
+      const res = await request(
+        `/api/friend-request/accept/${userData.friendRequest._id}`,
+        "PUT",
+        { userId: userData._id }
+      );
+
+      setUserData((prevState: any) => {
+        return {
+          ...prevState,
+          friendRequest: res.friendRequest,
+        };
+      });
+
+      // setMeUserData((prevState: any) => {
+      //   return {
+      //     ...prevState
+      //   };
+      // });
 
       const notification = {
         user: meUserData,
@@ -116,15 +174,14 @@ export const useFriendRequest = (
 
   const handleCancelFriendRequest = async () => {
     try {
+      setRelationToMe("not_friends");
+      setUserData({ ...userData, friendRequest: null });
+
       const res = await request(
         `/api/friend-request/cancel/${userData.friendRequest._id}`,
         "DELETE",
         { userId: userData._id }
       );
-
-      setRelationToMe("not_friends");
-
-      setUserData({ ...userData, friendRequest: null });
     } catch (e) {
       console.log(e);
     }
@@ -136,5 +193,6 @@ export const useFriendRequest = (
     handleSendUnFriendRequest,
     handleAcceptFriendRequest,
     relationToMe,
+    loading,
   };
 };

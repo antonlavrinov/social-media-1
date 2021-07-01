@@ -2,11 +2,7 @@ import React, { useState } from "react";
 import Tippy from "@tippyjs/react";
 import styled from "styled-components";
 import { ReactComponent as EmojiIcon } from "../assets/icons/emoji-icon.svg";
-import {
-  ContentBox,
-  PopupPrimary,
-  svgPrimaryStyle,
-} from "../styled-components/global";
+import { ContentBox, svgPrimaryStyle } from "../styled-components/global";
 
 const EmojiWrapper = styled.div`
   position: relative;

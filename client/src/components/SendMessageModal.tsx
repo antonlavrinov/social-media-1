@@ -16,8 +16,7 @@ import { ReactComponent as Cross } from "../assets/icons/cross-icon.svg";
 import { ReactComponent as ImageUploadIcon } from "../assets/icons/image-upload-icon.svg";
 import Emojis from "./Emojis";
 import Spinner from "./Spinner";
-
-const Wrapper = styled.div``;
+import ButtonSpinner from "./ButtonSpinner";
 
 const SendMessagePopup = styled.div`
   min-width: 450px;
@@ -26,6 +25,8 @@ const SendMessagePopup = styled.div`
 
 const ButtonsWrapper = styled.div`
   margin-left: auto;
+  display: flex;
+  align-items: center;
 `;
 
 const CrossIcon = styled(Cross)`
@@ -39,9 +40,6 @@ const CrossIcon = styled(Cross)`
 `;
 
 const ImageUpload = styled.div`
-  /* position: absolute;
-  top: 18px;
-  right: 55px; */
   svg {
     ${svgPrimaryStyle}
   }
@@ -49,8 +47,6 @@ const ImageUpload = styled.div`
 
 const PreviewImagesWrapper = styled.div`
   display: flex;
-
-  /* margin-top: 1px; */
 `;
 
 const PreviewImageWrapper = styled.div`
@@ -77,13 +73,6 @@ const DeleteImageIcon = styled.div`
     fill: white;
     top: auto;
     right: auto;
-  }
-`;
-
-const TextAreaWrapper = styled.div`
-  position: relative;
-  svg {
-    top: 0;
   }
 `;
 
@@ -129,11 +118,9 @@ type Props = {
 
 const SendMessageModal: React.FC<Props> = ({
   modalIsOpen,
-  openModal,
   closeModal,
   userData,
 }) => {
-  console.log("USER DATA", userData);
   const [content, setContent] = useState<string>("");
   const { conversations, setConversations, meUserData, socket } =
     useContext(AuthContext);
@@ -146,7 +133,7 @@ const SendMessageModal: React.FC<Props> = ({
   } = useUploadImages();
   const { handlePageNotification } = useNotistack();
 
-  const { request } = useHttp();
+  const { request, loading } = useHttp();
   const ref = useRef<HTMLFormElement>(null);
   const imageUploadRef = useRef<null | HTMLInputElement>(null);
 
@@ -157,12 +144,6 @@ const SendMessageModal: React.FC<Props> = ({
   const handleChooseEmoji = (emoji: string): void => {
     setContent(content + emoji);
   };
-
-  const existingConversation = conversations.find((el: any) => {
-    const func = (user: any) => user._id === userData?._id;
-    return el.users.some(func);
-  });
-  console.log("existingConversation", existingConversation);
 
   const handleCreateConversation = async () => {
     try {
@@ -178,8 +159,6 @@ const SendMessageModal: React.FC<Props> = ({
       setConversations((prevState: any) => {
         return [res.conversation, ...prevState];
       });
-
-      console.log("res create conversation", res);
 
       const notification = {
         user: meUserData,
@@ -227,8 +206,6 @@ const SendMessageModal: React.FC<Props> = ({
         return [updatedConv, ...newArr];
       });
 
-      console.log("res create message", res);
-
       const notification = {
         user: meUserData,
         recipients: [userData],
@@ -239,7 +216,6 @@ const SendMessageModal: React.FC<Props> = ({
       };
 
       socket.emit("createMessage", res.newMessage);
-      console.log("notific", notification);
       socket.emit("createMessageNotification", notification);
       closeModal();
       handlePageNotification({ type: "success", text: res.message });
@@ -276,7 +252,6 @@ const SendMessageModal: React.FC<Props> = ({
         new Event("submit", { cancelable: true, bubbles: true })
       );
       e.preventDefault();
-      // e.stopPropagation();
     }
   };
 
@@ -287,7 +262,6 @@ const SendMessageModal: React.FC<Props> = ({
       open={modalIsOpen}
       onClose={closeModal}
       focusTrapped={false}
-      // animationDuration={0}
       classNames={{
         overlay: "customOverlay",
         modal: "customModal",
@@ -364,8 +338,12 @@ const SendMessageModal: React.FC<Props> = ({
               >
                 Cancel
               </Button>
-              <Button size="small" type="submit">
-                Send
+              <Button
+                size="small"
+                type="submit"
+                style={{ display: "flex", alignItems: "center" }}
+              >
+                Send {loading && <ButtonSpinner />}
               </Button>
             </ButtonsWrapper>
           </ContentBoxContainer>

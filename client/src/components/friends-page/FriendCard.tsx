@@ -38,13 +38,11 @@ type Props = {
 };
 
 const FriendCard: React.FC<Props> = ({ friend, isPersonal }) => {
-  //   const { relationToMe, setRelationToMe } = useCheckRelationToMe(friend);
   const { meUserData, setMeUserData } = useContext(AuthContext);
   const { online } = useContext(OnlineContext);
   const { request } = useHttp();
   const { visible, show, hide } = useTippyVisibility();
   const { openModal, modalIsOpen, closeModal } = useModal();
-  // console.log("IS PERSONAL", isPersonal);
   const handleDeleteFriend = async () => {
     const friendRequest = meUserData?.friendRequests?.find(
       (req) => req.recipient === friend._id || req.requester === friend._id
@@ -99,7 +97,10 @@ const FriendCard: React.FC<Props> = ({ friend, isPersonal }) => {
         >
           {friend.firstName} {friend.lastName}
         </CustomLink>
-        <CustomLinkButton onClick={openModal}>Send message</CustomLinkButton>
+        {friend._id !== meUserData?._id && (
+          <CustomLinkButton onClick={openModal}>Send message</CustomLinkButton>
+        )}
+
         <SendMessageModal
           openModal={openModal}
           closeModal={closeModal}

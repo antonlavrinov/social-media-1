@@ -6,8 +6,6 @@ export const useLoadConversation = (id: string) => {
   const { request, loading } = useHttp();
   useEffect(() => {
     request(`/api/conversation/${id}`, "GET").then((res) => {
-      // console.log("conversation", res);
-
       setConversation(res.conversation);
     });
   }, []);

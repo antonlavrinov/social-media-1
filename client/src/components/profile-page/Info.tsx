@@ -1,9 +1,9 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { OnlineContext } from "../../context/OnlineContext";
-import { UserContext } from "../../context/UserContext";
 import { IUserData } from "../../interfaces/IUserData";
 import { ContentBoxContainer, Separator } from "../../styled-components/global";
+import { DateTime } from "luxon";
 
 const Wrapper = styled.div``;
 
@@ -16,10 +16,8 @@ const InfoHeader = styled.div`
 const UserName = styled.div`
   font-size: 18px;
   color: var(--color-black);
-  /* font-weight: 600; */
 `;
 const UserStatus = styled.div`
-  /* font-size: 13px; */
   color: var(--text-color-secondary);
 `;
 
@@ -45,7 +43,6 @@ type Props = {
 const ProfileInfo: React.FC<Props> = ({ userData }) => {
   const { online } = useContext(OnlineContext);
 
-  // console.log("info updated");
   return (
     <Wrapper>
       <ContentBoxContainer>
@@ -66,6 +63,18 @@ const ProfileInfo: React.FC<Props> = ({ userData }) => {
             </InfoItem>
           )}
 
+          {userData.dateOfBirth && (
+            <InfoItem>
+              <InfoItemTitle>Date of birth:</InfoItemTitle>
+              <InfoItemContent>
+                {DateTime.fromISO(String(userData.dateOfBirth)).toLocaleString({
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </InfoItemContent>
+            </InfoItem>
+          )}
           {userData.aboutMe && (
             <InfoItem>
               <InfoItemTitle>About me:</InfoItemTitle>

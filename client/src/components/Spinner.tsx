@@ -16,7 +16,6 @@ const Spinner = () => (
 
 const StyledSpinner = styled.svg`
   animation: rotate 1s linear infinite;
-  /* margin: 70px; */
   width: 40px;
   height: 40px;
 
